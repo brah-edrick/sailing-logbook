@@ -8,6 +8,9 @@ import {
   Textarea,
   Flex,
   Button,
+  createListCollection,
+  Portal,
+  Select,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 
@@ -29,6 +32,14 @@ export const FormField: React.FC<FormFieldProps> = ({
     </Field.Root>
   );
 };
+
+const typeCollection = createListCollection({
+  items: [
+    { label: "Monohull", value: "monohull" },
+    { label: "Trimaran", value: "trimaran" },
+    { label: "Catamaran", value: "catamaran" },
+  ],
+});
 
 export type BoatFormFields = {
   name: string;
@@ -112,11 +123,31 @@ export const BoatForm: React.FC<BoatFormProps> = ({
             <Fieldset.Content>
               <Grid templateColumns="repeat(2, 1fr)" gap="4">
                 <FormField label="Type">
-                  <Input
-                    name="type"
-                    value={form.type}
-                    onChange={handleChange}
-                  />
+                  <Select.Root
+                    collection={typeCollection}
+                    onValueChange={(details) =>
+                      setForm({ ...form, type: details.value[0] })
+                    }
+                    value={form.type ? [form.type] : []}
+                  >
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Monohull, Trimaran, Catamaran" />
+                      </Select.Trigger>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content color="white">
+                          {typeCollection.items.map((type) => (
+                            <Select.Item item={type} key={type.value}>
+                              <Select.ItemText>{type.label}</Select.ItemText>
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </FormField>
                 <FormField label="Model">
                   <Input
