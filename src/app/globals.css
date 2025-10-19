@@ -1,0 +1,10 @@
+:root {
+  --background: #;
+  --foreground: #171717;
+}
+
+body {
+  background: var(--chakra-colors-bg);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

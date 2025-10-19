@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Boat {
+  id         Int       @id @default(autoincrement())
+  name       String
+  type       String?   // Monohull, Trimaran, etc.
+  make       String
+  model      String?
+  year       Int?
+  lengthFt   Float
+  beamFt     Float?
+  sailNumber String?
+  homePort   String?
+  owner      String?
+  notes      String?
+  colorHex   String?
+  activities SailingActivity[]
+}
+
+model SailingActivity {
+  id                 Int      @id @default(autoincrement())
+  boatId             Int
+  startTime          DateTime
+  endTime            DateTime
+  departureLocation  String?
+  returnLocation     String?
+  distanceNm         Float?
+  avgSpeedKnots      Float?
+  weatherConditions  String?
+  windSpeedKnots     Float?
+  windDirection      String?
+  seaState           String?
+  sailConfiguration  String?
+  purpose            String?
+  notes              String?
+
+  boat Boat @relation(fields: [boatId], references: [id])
+}
