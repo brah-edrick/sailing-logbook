@@ -2,10 +2,186 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Fieldset, Field, Input, Textarea, Flex, Heading, Box, Stack, Text, Grid, Link } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
+
+interface FormFieldProps {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}
+
+const FormField: React.FC<FormFieldProps> = ({ label, required = false, children }) => {
+  return (
+    <Field.Root color="white" required={required}>
+      <Field.Label color="white">{label}</Field.Label>
+      {children}
+    </Field.Root>
+  );
+};
+
+export type BoatFormFields = {
+  name: string;
+  type: string;
+  make: string;
+  model: string;
+  year: string;
+  lengthFt: string;
+  beamFt: string;
+  sailNumber: string;
+  homePort: string;
+  owner: string;
+  notes: string;
+  colorHex: string;
+}
+
+type BoatFormProps = {
+  onSubmit: (form: BoatFormFields) => void;
+  initialValues: BoatFormFields;
+  submitButtonText: string;
+}
+
+export const BoatForm: React.FC<BoatFormProps> = ({ onSubmit, initialValues, submitButtonText }) => {
+  const [form, setForm] = useState(initialValues);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(form);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Stack direction="column" gap="4">
+
+        <Box border="1px solid" borderColor="gray.800" borderRadius="md" p="4">
+          <Fieldset.Root>
+            <Fieldset.Legend>Required Information</Fieldset.Legend>
+            <Fieldset.Content>
+              <Grid templateColumns="repeat(2, 1fr)" gap="4">
+                <FormField label="Name" required>
+                  <Input
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </FormField>
+                <FormField label="Make" required>
+                  <Input
+                    name="make"
+                    value={form.make}
+                    onChange={handleChange}
+                    required
+                  />
+                </FormField>
+                <FormField label="Length (ft)" required>
+                  <Input
+                    name="lengthFt"
+                    value={form.lengthFt}
+                    onChange={handleChange}
+                    required
+                    type="number"
+                  />
+                </FormField>
+              </Grid>
+            </Fieldset.Content>
+          </Fieldset.Root>
+        </Box>
+
+        <Box border="1px solid" borderColor="gray.800" borderRadius="md" p="4">
+          <Fieldset.Root>
+            <Fieldset.Legend>Optional Information</Fieldset.Legend>
+            <Fieldset.Content>
+              <Grid templateColumns="repeat(2, 1fr)" gap="4">
+                <FormField label="Type">
+                  <Input
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                  />
+                </FormField>
+                <FormField label="Model">
+                  <Input
+                    name="model"
+                    value={form.model}
+                    onChange={handleChange}
+                  />
+                </FormField>
+                <FormField label="Year">
+                  <Input
+                    name="year"
+                    value={form.year}
+                    onChange={handleChange}
+                    type="number"
+                  />
+                </FormField>
+                <FormField label="Beam (ft)">
+                  <Input
+                    name="beamFt"
+                    value={form.beamFt}
+                    onChange={handleChange}
+                    type="number"
+                  />
+                </FormField>
+                <FormField label="Sail Number">
+                  <Input
+                    name="sailNumber"
+                    value={form.sailNumber}
+                    onChange={handleChange}
+                  />
+                </FormField>
+                <FormField label="Home Port">
+                  <Input
+                    name="homePort"
+                    value={form.homePort}
+                    onChange={handleChange}
+                  />
+                </FormField>
+                <FormField label="Owner">
+                  <Input
+                    name="owner"
+                    value={form.owner}
+                    onChange={handleChange}
+                  />
+                </FormField>
+                <FormField label="Color">
+                  <Input
+                    name="colorHex"
+                    value={form.colorHex}
+                    onChange={handleChange}
+                    type="color"
+                  />
+                </FormField>
+                <FormField label="Notes">
+                  <Textarea
+                    name="notes"
+                    value={form.notes}
+                    onChange={handleChange}
+                    rows={4}
+                  />
+                </FormField>
+              </Grid>
+            </Fieldset.Content>
+          </Fieldset.Root>
+        </Box>
+      </Stack>
+
+      <Flex justifyContent="end">
+        <Button variant="surface" type="submit" mt="6" size="lg">
+          {submitButtonText}
+        </Button>
+      </Flex>
+    </form>
+  )
+
+}
 
 export default function NewBoatPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
+  const initialValues = {
     name: "",
     type: "",
     make: "",
@@ -18,183 +194,65 @@ export default function NewBoatPage() {
     owner: "",
     notes: "",
     colorHex: "#3b82f6",
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    const payload = {
-      name: form.name,
-      type: form.type || null,
-      make: form.make,
-      model: form.model || null,
-      year: form.year ? Number(form.year) : null,
-      lengthFt: Number(form.lengthFt),
-      beamFt: form.beamFt ? Number(form.beamFt) : null,
-      sailNumber: form.sailNumber || null,
-      homePort: form.homePort || null,
-      owner: form.owner || null,
-      notes: form.notes || null,
-      colorHex: form.colorHex || null,
-    };
 
-    const res = await fetch("/api/boats", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+  const handleSubmit = async (boat: BoatFormFields) => {
+    try {
+      const payload = {
+        name: boat.name,
+        type: boat.type || null,
+        make: boat.make,
+        model: boat.model || null,
+        year: boat.year ? Number(boat.year) : null,
+        lengthFt: Number(boat.lengthFt),
+        beamFt: boat.beamFt ? Number(boat.beamFt) : null,
+        sailNumber: boat.sailNumber || null,
+        homePort: boat.homePort || null,
+        owner: boat.owner || null,
+        notes: boat.notes || null,
+        colorHex: boat.colorHex || null,
+      };
 
-    if (res.ok) {
-      const boat = await res.json();
-      router.push(`/boats/${boat.id}`);
-    } else {
-      alert("Failed to create boat");
+      const res = await fetch("/api/boats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const boat = await res.json();
+        toaster.create({
+          title: "Success",
+          description: `${boat.name} created successfully`,
+          type: "success",
+        });
+        router.push(`/boats/${boat.id}`);
+      } else {
+        toaster.create({
+          title: "Error",
+          description: `Failed to create ${boat.name}, please try again`,
+          type: "error",
+        });
+      }
+    } catch (error) {
+      toaster.create({
+        title: "Error",
+        description: "Network error while creating boat",
+        type: "error",
+      });
     }
   };
 
   return (
     <main>
-      <h1>Add a New Boat</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Required */}
-        <div>
-          <Input
-            name="name"
-            label="Name"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            name="make"
-            label="Make"
-            value={form.make}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            name="lengthFt"
-            label="Length (ft)"
-            value={form.lengthFt}
-            onChange={handleChange}
-            required
-            type="number"
-          />
-        </div>
-
-        {/* Optional */}
-        <h2>Optional Fields</h2>
-        <div>
-          <Input
-            name="type"
-            label="Type"
-            value={form.type}
-            onChange={handleChange}
-          />
-          <Input
-            name="model"
-            label="Model"
-            value={form.model}
-            onChange={handleChange}
-          />
-          <Input
-            name="year"
-            label="Year"
-            value={form.year}
-            onChange={handleChange}
-            type="number"
-          />
-          <Input
-            name="beamFt"
-            label="Beam (ft)"
-            value={form.beamFt}
-            onChange={handleChange}
-            type="number"
-          />
-          <Input
-            name="sailNumber"
-            label="Sail Number"
-            value={form.sailNumber}
-            onChange={handleChange}
-          />
-          <Input
-            name="homePort"
-            label="Home Port"
-            value={form.homePort}
-            onChange={handleChange}
-          />
-          <Input
-            name="owner"
-            label="Owner"
-            value={form.owner}
-            onChange={handleChange}
-          />
-          <Input
-            name="colorHex"
-            label="Color"
-            value={form.colorHex}
-            onChange={handleChange}
-            type="color"
-          />
-        </div>
-
-        {/* Notes */}
-        <div>
-          <label htmlFor="notes">
-            Notes
-          </label>
-          <textarea
-            name="notes"
-            id="notes"
-            value={form.notes}
-            onChange={handleChange}
-            rows={4}
-          />
-        </div>
-
-        <button type="submit">
-          Add Boat
-        </button>
-      </form>
+      <Link href="/boats">
+        <Text color="white" >Back to Boats</Text>
+      </Link>
+      <Heading size="3xl" color="white" mb="6">Add a New Boat</Heading>
+      <BoatForm onSubmit={handleSubmit} initialValues={initialValues} submitButtonText="Add Boat" />
     </main>
   );
 }
 
-// Helper input component
-function Input({
-  name,
-  label,
-  value,
-  onChange,
-  type = "text",
-  required = false,
-}: {
-  name: string;
-  label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  type?: string;
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <label htmlFor={name}>
-        {label}
-      </label>
-      <input
-        type={type}
-        name={name}
-        id={name}
-        value={value}
-        onChange={onChange}
-        required={required}
-      />
-    </div>
-  );
-}

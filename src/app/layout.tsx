@@ -4,6 +4,7 @@ import { Provider } from "@/components/ui/provider"
 
 import "./globals.css";
 import { Container } from "@chakra-ui/react";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable}`}
       >
-        <Provider><Container>{children}</Container></Provider>
+        <Provider><Container py="4">{children}</Container><Toaster /></Provider>
       </body>
     </html>
   );
