@@ -1,5 +1,6 @@
 // app/api/activities/route.ts
 import { prisma } from "@/lib/prisma";
+import { activitySchema } from "@/validation/activities";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -16,9 +17,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const data = await req.json();
+  const validatedData = activitySchema.parse(data);
   const activity = await prisma.sailingActivity.create({
-    data,
+    data: validatedData,
   });
-
   return NextResponse.json(activity, { status: 201 });
 }

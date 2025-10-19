@@ -1,5 +1,6 @@
 // app/api/boats/route.ts
 import { prisma } from "@/lib/prisma";
+import { boatSchema } from "@/validation/boat";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -9,6 +10,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const data = await req.json();
-  const boat = await prisma.boat.create({ data });
+  console.log(data);
+  const validatedData = boatSchema.parse(data);
+  const boat = await prisma.boat.create({ data: validatedData });
   return NextResponse.json(boat, { status: 201 });
 }
