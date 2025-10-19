@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Heading, Text, Link, Spinner, Center } from "@chakra-ui/react";
-import { BoatForm, BoatFormFields } from "../../new/page";
+import { BoatForm, BoatFormFields } from "@/components/form/boat";
 import { toaster } from "@/components/ui/toaster";
 
 export default function EditBoatPage({
