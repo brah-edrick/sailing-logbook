@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Heading, Text, Link, Spinner, Center } from "@chakra-ui/react";
-import { ActivityForm, ActivityFormFields } from "../../new/page";
 import { toaster } from "@/components/ui/toaster";
+import { ActivityFormFields, ActivityForm } from "@/components/form/activity";
 
 export default function EditActivityPage({
   params,
