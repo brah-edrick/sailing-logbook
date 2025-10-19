@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Fieldset, Field, Input, Textarea, Flex, Heading, Box, Stack, Text, Grid, Link, Select, Spinner, Center, Portal, createListCollection } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import { Boat } from "@prisma/client";
@@ -263,8 +263,11 @@ export default function NewActivityPage() {
     const [boats, setBoats] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const searchParams = useSearchParams();
+    const boatIdFromParams = searchParams.get("boatId");
+
     const initialValues: ActivityFormFields = {
-        boatId: "",
+        boatId: boatIdFromParams || "",
         startTime: "",
         endTime: "",
         departureLocation: "",

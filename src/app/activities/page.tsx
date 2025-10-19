@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Box, Button, Flex, Heading, Spinner, Center, Text, Table } from "@chakra-ui/react";
 
-const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
 };
 
-const calculateDuration = (startTime: string, endTime: string) => {
+export const calculateDuration = (startTime: string, endTime: string) => {
     const start = new Date(startTime);
     const end = new Date(endTime);
     const durationMs = end.getTime() - start.getTime();
@@ -89,16 +89,17 @@ export default function ActivitiesPage() {
                                     <Text color="white">{formatDate(activity.startTime)}</Text>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <Flex alignItems="center" gap="2">
-                                        {activity.boat?.colorHex && (
-                                            <Box
-                                                style={{ backgroundColor: activity.boat.colorHex }}
-                                                borderRadius="full"
-                                                boxSize="12px"
-                                            />
-                                        )}
-                                        <Text color="white">{activity.boat?.name || 'Unknown Boat'}</Text>
-                                    </Flex>
+                                    <Link href={`/boats/${activity.boatId}`}>
+                                        <Flex alignItems="center" gap="2">
+                                            {activity.boat?.colorHex && (
+                                                <Box
+                                                    style={{ backgroundColor: activity.boat.colorHex }}
+                                                    borderRadius="full"
+                                                    boxSize="12px"
+                                                />
+                                            )}
+                                            <Text color="white">{activity.boat?.name || 'Unknown Boat'}</Text>
+                                        </Flex></Link>
                                 </Table.Cell>
                                 <Table.Cell>
                                     <Text color="white">{calculateDuration(activity.startTime, activity.endTime)}</Text>

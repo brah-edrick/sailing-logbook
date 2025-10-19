@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Card, DataList, Flex, Heading, Stack, Text, Spinner, Center, Dialog, Portal, CloseButton, SimpleGrid, GridItem } from "@chakra-ui/react"
+import { Box, Button, Card, DataList, Flex, Heading, Stack, Text, Spinner, Center, Dialog, Portal, CloseButton, SimpleGrid, GridItem, Table } from "@chakra-ui/react"
 import Link from "next/link";
 import { toaster } from "@/components/ui/toaster";
+import { calculateDuration, formatDate } from "@/app/activities/page";
 
 export default function BoatDetailPage({
   params,
@@ -13,6 +14,7 @@ export default function BoatDetailPage({
 }) {
   const router = useRouter();
   const [boat, setBoat] = useState<any>(null);
+  const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState<string>("");
 
@@ -46,6 +48,17 @@ export default function BoatDetailPage({
     };
 
     fetchBoat();
+  }, [id, router]);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      const res = await fetch(`/api/boats/${id}/activities`);
+      if (res.ok) {
+        const activitiesData = await res.json();
+        setActivities(activitiesData);
+      }
+    };
+    fetchActivities();
   }, [id, router]);
 
   if (loading) {
@@ -94,8 +107,8 @@ export default function BoatDetailPage({
       <div>
         <header>
           <Flex justifyContent="space-between" py="4">
-            <Heading color="white" size="3xl"><Flex alignItems="center" gap="1">
-              {boat.name}
+            <Heading color="white" size="3xl"><Flex alignItems="baseline" gap="1">
+              <Text>{boat.name}</Text>
               <Box
                 style={{ backgroundColor: boat.colorHex || '#FFFFFF' }}
                 borderRadius="full"
@@ -104,7 +117,9 @@ export default function BoatDetailPage({
               />
             </Flex></Heading>
             <Stack direction="row" gap="2">
-              <Button variant="surface" >+ Add Activity</Button>
+              <Link href={`/activities/new?boatId=${boat.id}`}>
+                <Button variant="surface" >+ Add New Activity</Button>
+              </Link>
               <Button variant="surface" asChild>
                 <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
               </Button>
@@ -169,7 +184,59 @@ export default function BoatDetailPage({
                 <Text color="white">Activities</Text>
               </Card.Header>
               <Card.Body>
-
+                {activities.length === 0 ? (
+                  <Center>
+                    <Text color="white" fontSize="lg">No activities found. <Link href={`/activities/new?boatId=${boat.id}`}>Create your first activity!</Link></Text>
+                  </Center>
+                ) : (
+                  <Table.Root>
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.ColumnHeader color="white">Date</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">Duration</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">Purpose</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">Distance (NM)</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">Avg Speed (kts)</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">Wind (kts)</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white"></Table.ColumnHeader>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {activities.map((activity) => (
+                        <Table.Row key={activity.id}>
+                          <Table.Cell>
+                            <Text color="white">{formatDate(activity.startTime)}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text color="white">{calculateDuration(activity.startTime, activity.endTime)}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text color="white">{activity.purpose || '-'}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text color="white">{activity.distanceNm || '-'}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text color="white">{activity.avgSpeedKnots || '-'}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Text color="white">{activity.windSpeedKnots || '-'}</Text>
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Flex gap="2" justifyContent="end">
+                              <Button size="sm" variant="outline" asChild>
+                                <Link href={`/activities/${activity.id}/edit`}>Edit</Link>
+                              </Button>
+                              <Button size="sm" variant="surface" asChild>
+                                <Link href={`/activities/${activity.id}`}>View</Link>
+                              </Button>
+                            </Flex>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Root>
+                )}
               </Card.Body>
             </Card.Root>
           </GridItem>
