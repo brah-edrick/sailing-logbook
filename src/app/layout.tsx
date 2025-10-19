@@ -44,9 +44,7 @@ export default function RootLayout({
                   gap="2"
                   justifyContent="space-between"
                 >
-                  <Heading size="xl" color="white">
-                    Sailing Log
-                  </Heading>
+                  <Heading size="xl">Sailing Log</Heading>
                   <Stack direction="row" gap="4">
                     <Link href="/boats">Boats</Link>
                     <Link href="/activities">Activities</Link>

@@ -106,7 +106,7 @@ export default function NewActivityPage() {
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -115,9 +115,9 @@ export default function NewActivityPage() {
   return (
     <main>
       <Link href="/activities">
-        <Text color="white">Back to Activities</Text>
+        <Text>Back to Activities</Text>
       </Link>
-      <Heading size="3xl" color="white" mb="6">
+      <Heading size="3xl" mb="6">
         Add New Activity
       </Heading>
       <ActivityForm

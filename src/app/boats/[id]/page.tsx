@@ -82,7 +82,7 @@ export default function BoatDetailPage({
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -92,9 +92,7 @@ export default function BoatDetailPage({
     return (
       <main>
         <Center h="50vh">
-          <Text color="white" fontSize="xl">
-            Boat not found
-          </Text>
+          <Text fontSize="xl">Boat not found</Text>
         </Center>
       </main>
     );
@@ -118,13 +116,13 @@ export default function BoatDetailPage({
     <main>
       <div>
         <Link href="/boats">
-          <Text color="white">Back to Boats</Text>
+          <Text>Back to Boats</Text>
         </Link>
       </div>
       <div>
         <header>
           <Flex justifyContent="space-between" py="4">
-            <Heading color="white" size="3xl">
+            <Heading size="3xl">
               <Flex alignItems="baseline" gap="1">
                 <Text>{boat.name}</Text>
                 <Box
@@ -153,10 +151,10 @@ export default function BoatDetailPage({
                   <Dialog.Positioner>
                     <Dialog.Content>
                       <Dialog.Header>
-                        <Dialog.Title color="white">Dialog Title</Dialog.Title>
+                        <Dialog.Title>Dialog Title</Dialog.Title>
                       </Dialog.Header>
                       <Dialog.Body>
-                        <Text color="white">
+                        <Text>
                           Are you sure you want to delete {boat.name}?
                         </Text>
                       </Dialog.Body>
@@ -187,7 +185,7 @@ export default function BoatDetailPage({
         <SimpleGrid columns={3} gap={4}>
           <Card.Root>
             <Card.Header>
-              <Text color="white">Details</Text>
+              <Text>Details</Text>
             </Card.Header>
             <Card.Body>
               <DataList.Root orientation="horizontal">
@@ -222,12 +220,12 @@ export default function BoatDetailPage({
           <GridItem colSpan={2}>
             <Card.Root>
               <Card.Header>
-                <Text color="white">Activities</Text>
+                <Text>Activities</Text>
               </Card.Header>
               <Card.Body>
                 {activities.length === 0 ? (
                   <Center>
-                    <Text color="white" fontSize="lg">
+                    <Text fontSize="lg">
                       No activities found.{" "}
                       <Link href={`/activities/new?boatId=${boat.id}`}>
                         Create your first activity!
@@ -238,37 +236,23 @@ export default function BoatDetailPage({
                   <Table.Root>
                     <Table.Header>
                       <Table.Row>
-                        <Table.ColumnHeader color="white">
-                          Date
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">
-                          Duration
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">
-                          Purpose
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">
-                          Distance (NM)
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">
-                          Avg Speed (kts)
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">
-                          Wind (kts)
-                        </Table.ColumnHeader>
-                        <Table.ColumnHeader color="white"></Table.ColumnHeader>
+                        <Table.ColumnHeader>Date</Table.ColumnHeader>
+                        <Table.ColumnHeader>Duration</Table.ColumnHeader>
+                        <Table.ColumnHeader>Purpose</Table.ColumnHeader>
+                        <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
+                        <Table.ColumnHeader>Avg Speed (kts)</Table.ColumnHeader>
+                        <Table.ColumnHeader>Wind (kts)</Table.ColumnHeader>
+                        <Table.ColumnHeader></Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
                       {activities.map((activity) => (
                         <Table.Row key={activity.id}>
                           <Table.Cell>
-                            <Text color="white">
-                              {formatDate(activity.startTime)}
-                            </Text>
+                            <Text>{formatDate(activity.startTime)}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">
+                            <Text>
                               {calculateDuration(
                                 activity.startTime,
                                 activity.endTime
@@ -276,22 +260,16 @@ export default function BoatDetailPage({
                             </Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">{activity.purpose || "-"}</Text>
+                            <Text>{activity.purpose || "-"}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">
-                              {activity.distanceNm || "-"}
-                            </Text>
+                            <Text>{activity.distanceNm || "-"}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">
-                              {activity.avgSpeedKnots || "-"}
-                            </Text>
+                            <Text>{activity.avgSpeedKnots || "-"}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">
-                              {activity.windSpeedKnots || "-"}
-                            </Text>
+                            <Text>{activity.windSpeedKnots || "-"}</Text>
                           </Table.Cell>
                           <Table.Cell>
                             <Flex gap="2" justifyContent="end">

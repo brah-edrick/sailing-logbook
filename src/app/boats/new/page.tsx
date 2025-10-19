@@ -72,9 +72,9 @@ export default function NewBoatPage() {
   return (
     <main>
       <Link href="/boats">
-        <Text color="white">Back to Boats</Text>
+        <Text>Back to Boats</Text>
       </Link>
-      <Heading size="3xl" color="white" mb="6">
+      <Heading size="3xl" mb="6">
         Add a New Boat
       </Heading>
       <BoatForm

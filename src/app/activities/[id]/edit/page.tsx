@@ -122,7 +122,7 @@ export default function EditActivityPage({
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -131,7 +131,7 @@ export default function EditActivityPage({
   if (!activity) {
     return (
       <main>
-        <Text color="white">Activity not found</Text>
+        <Text>Activity not found</Text>
       </main>
     );
   }
@@ -167,9 +167,9 @@ export default function EditActivityPage({
   return (
     <main>
       <Link href={`/activities/${id}`}>
-        <Text color="white">Back to Activity</Text>
+        <Text>Back to Activity</Text>
       </Link>
-      <Heading size="3xl" color="white" mb="6">
+      <Heading size="3xl" mb="6">
         Edit Activity
       </Heading>
       <ActivityForm

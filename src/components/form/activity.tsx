@@ -27,8 +27,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   children,
 }) => {
   return (
-    <Field.Root color="white" required={required}>
-      <Field.Label color="white">{label}</Field.Label>
+    <Field.Root required={required}>
+      <Field.Label>{label}</Field.Label>
       {children}
     </Field.Root>
   );
@@ -171,7 +171,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                     </Select.Control>
                     <Portal>
                       <Select.Positioner>
-                        <Select.Content color="white">
+                        <Select.Content>
                           {boatsCollection.items.map((boat) => (
                             <Select.Item item={boat} key={boat.value}>
                               <Select.ItemText>
@@ -227,7 +227,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                     </Select.Control>
                     <Portal>
                       <Select.Positioner>
-                        <Select.Content color="white">
+                        <Select.Content>
                           {purposeCollection.items.map((purpose) => (
                             <Select.Item item={purpose} key={purpose.value}>
                               <Select.ItemText>{purpose.label}</Select.ItemText>
@@ -308,7 +308,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                     </Select.Control>
                     <Portal>
                       <Select.Positioner>
-                        <Select.Content color="white">
+                        <Select.Content>
                           {conditionCollection.items.map((condition) => (
                             <Select.Item item={condition} key={condition.value}>
                               <Select.ItemText>
@@ -346,7 +346,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                     </Select.Control>
                     <Portal>
                       <Select.Positioner>
-                        <Select.Content color="white">
+                        <Select.Content>
                           {windDirectionCollection.items.map(
                             (windDirection) => (
                               <Select.Item
@@ -380,7 +380,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                     </Select.Control>
                     <Portal>
                       <Select.Positioner>
-                        <Select.Content color="white">
+                        <Select.Content>
                           {seaStateCollection.items.map((seaState) => (
                             <Select.Item item={seaState} key={seaState.value}>
                               <Select.ItemText>
