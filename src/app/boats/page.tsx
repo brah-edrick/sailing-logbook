@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Box, Button, Flex, Heading, Spinner, Center, Text, Table } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Spinner,
+  Center,
+  Text,
+  Table,
+} from "@chakra-ui/react";
 
 export default function BoatsPage() {
   const [boats, setBoats] = useState<any[]>([]);
@@ -41,7 +50,9 @@ export default function BoatsPage() {
   return (
     <main>
       <Flex justifyContent="space-between" gap="4" py="4">
-        <Heading size="3xl" color="white">My Boats</Heading>
+        <Heading size="3xl" color="white">
+          My Boats
+        </Heading>
         <Button variant="surface" asChild>
           <Link href="/boats/new">+ Add New Boat</Link>
         </Button>
@@ -64,7 +75,7 @@ export default function BoatsPage() {
               <Table.Cell>
                 <Flex alignItems="center" gap="2">
                   <Box
-                    style={{ backgroundColor: boat.colorHex || '#FFFFFF' }}
+                    style={{ backgroundColor: boat.colorHex || "#FFFFFF" }}
                     borderRadius="full"
                     boxSize="12px"
                   />
@@ -72,16 +83,16 @@ export default function BoatsPage() {
                 </Flex>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.make || '-'}</Text>
+                <Text color="white">{boat.make || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.model || '-'}</Text>
+                <Text color="white">{boat.model || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.year || '-'}</Text>
+                <Text color="white">{boat.year || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.lengthFt || '-'}</Text>
+                <Text color="white">{boat.lengthFt || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
                 <Flex gap="2" justifyContent="end">

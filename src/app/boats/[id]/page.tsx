@@ -2,7 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Card, DataList, Flex, Heading, Stack, Text, Spinner, Center, Dialog, Portal, CloseButton, SimpleGrid, GridItem, Table } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Card,
+  DataList,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+  Spinner,
+  Center,
+  Dialog,
+  Portal,
+  CloseButton,
+  SimpleGrid,
+  GridItem,
+  Table,
+} from "@chakra-ui/react";
 import Link from "next/link";
 import { toaster } from "@/components/ui/toaster";
 import { calculateDuration, formatDate } from "@/app/activities/page";
@@ -75,7 +92,9 @@ export default function BoatDetailPage({
     return (
       <main>
         <Center h="50vh">
-          <Text color="white" fontSize="xl">Boat not found</Text>
+          <Text color="white" fontSize="xl">
+            Boat not found
+          </Text>
         </Center>
       </main>
     );
@@ -95,8 +114,6 @@ export default function BoatDetailPage({
     }
   };
 
-
-
   return (
     <main>
       <div>
@@ -107,25 +124,29 @@ export default function BoatDetailPage({
       <div>
         <header>
           <Flex justifyContent="space-between" py="4">
-            <Heading color="white" size="3xl"><Flex alignItems="baseline" gap="1">
-              <Text>{boat.name}</Text>
-              <Box
-                style={{ backgroundColor: boat.colorHex || '#FFFFFF' }}
-                borderRadius="full"
-                boxSize="24px"
-                ml="2"
-              />
-            </Flex></Heading>
+            <Heading color="white" size="3xl">
+              <Flex alignItems="baseline" gap="1">
+                <Text>{boat.name}</Text>
+                <Box
+                  style={{ backgroundColor: boat.colorHex || "#FFFFFF" }}
+                  borderRadius="full"
+                  boxSize="24px"
+                  ml="2"
+                />
+              </Flex>
+            </Heading>
             <Stack direction="row" gap="2">
               <Link href={`/activities/new?boatId=${boat.id}`}>
-                <Button variant="surface" >+ Add New Activity</Button>
+                <Button variant="surface">+ Add New Activity</Button>
               </Link>
               <Button variant="surface" asChild>
                 <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
               </Button>
-              <Dialog.Root >
+              <Dialog.Root>
                 <Dialog.Trigger asChild>
-                  <Button variant="surface" color="red.500">Delete</Button>
+                  <Button variant="surface" color="red.500">
+                    Delete
+                  </Button>
                 </Dialog.Trigger>
                 <Portal>
                   <Dialog.Backdrop />
@@ -144,7 +165,13 @@ export default function BoatDetailPage({
                           <Button variant="outline">Cancel</Button>
                         </Dialog.ActionTrigger>
                         <Dialog.ActionTrigger asChild>
-                          <Button onClick={handleDelete} variant="surface" color="red.500">Confirm Delete {boat.name}</Button>
+                          <Button
+                            onClick={handleDelete}
+                            variant="surface"
+                            color="red.500"
+                          >
+                            Confirm Delete {boat.name}
+                          </Button>
                         </Dialog.ActionTrigger>
                       </Dialog.Footer>
                       <Dialog.CloseTrigger asChild>
@@ -154,7 +181,6 @@ export default function BoatDetailPage({
                   </Dialog.Positioner>
                 </Portal>
               </Dialog.Root>
-
             </Stack>
           </Flex>
         </header>
@@ -168,36 +194,68 @@ export default function BoatDetailPage({
                 <DataListItemComponent label="Type" value={boat.type} />
                 <DataListItemComponent label="Make" value={boat.make} />
                 <DataListItemComponent label="Model" value={boat.model} />
-                <DataListItemComponent label="Year" value={boat.year?.toString()} />
-                <DataListItemComponent label="Length (ft)" value={boat.lengthFt?.toString()} />
-                <DataListItemComponent label="Beam (ft)" value={boat.beamFt?.toString()} />
-                <DataListItemComponent label="Sail Number" value={boat.sailNumber} />
-                <DataListItemComponent label="Home Port" value={boat.homePort} />
+                <DataListItemComponent
+                  label="Year"
+                  value={boat.year?.toString()}
+                />
+                <DataListItemComponent
+                  label="Length (ft)"
+                  value={boat.lengthFt?.toString()}
+                />
+                <DataListItemComponent
+                  label="Beam (ft)"
+                  value={boat.beamFt?.toString()}
+                />
+                <DataListItemComponent
+                  label="Sail Number"
+                  value={boat.sailNumber}
+                />
+                <DataListItemComponent
+                  label="Home Port"
+                  value={boat.homePort}
+                />
                 <DataListItemComponent label="Owner" value={boat.owner} />
                 <DataListItemComponent label="Notes" value={boat.notes} />
               </DataList.Root>
             </Card.Body>
           </Card.Root>
           <GridItem colSpan={2}>
-            <Card.Root >
+            <Card.Root>
               <Card.Header>
                 <Text color="white">Activities</Text>
               </Card.Header>
               <Card.Body>
                 {activities.length === 0 ? (
                   <Center>
-                    <Text color="white" fontSize="lg">No activities found. <Link href={`/activities/new?boatId=${boat.id}`}>Create your first activity!</Link></Text>
+                    <Text color="white" fontSize="lg">
+                      No activities found.{" "}
+                      <Link href={`/activities/new?boatId=${boat.id}`}>
+                        Create your first activity!
+                      </Link>
+                    </Text>
                   </Center>
                 ) : (
                   <Table.Root>
                     <Table.Header>
                       <Table.Row>
-                        <Table.ColumnHeader color="white">Date</Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">Duration</Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">Purpose</Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">Distance (NM)</Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">Avg Speed (kts)</Table.ColumnHeader>
-                        <Table.ColumnHeader color="white">Wind (kts)</Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">
+                          Date
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">
+                          Duration
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">
+                          Purpose
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">
+                          Distance (NM)
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">
+                          Avg Speed (kts)
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader color="white">
+                          Wind (kts)
+                        </Table.ColumnHeader>
                         <Table.ColumnHeader color="white"></Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
@@ -205,30 +263,47 @@ export default function BoatDetailPage({
                       {activities.map((activity) => (
                         <Table.Row key={activity.id}>
                           <Table.Cell>
-                            <Text color="white">{formatDate(activity.startTime)}</Text>
+                            <Text color="white">
+                              {formatDate(activity.startTime)}
+                            </Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">{calculateDuration(activity.startTime, activity.endTime)}</Text>
+                            <Text color="white">
+                              {calculateDuration(
+                                activity.startTime,
+                                activity.endTime
+                              )}
+                            </Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">{activity.purpose || '-'}</Text>
+                            <Text color="white">{activity.purpose || "-"}</Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">{activity.distanceNm || '-'}</Text>
+                            <Text color="white">
+                              {activity.distanceNm || "-"}
+                            </Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">{activity.avgSpeedKnots || '-'}</Text>
+                            <Text color="white">
+                              {activity.avgSpeedKnots || "-"}
+                            </Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text color="white">{activity.windSpeedKnots || '-'}</Text>
+                            <Text color="white">
+                              {activity.windSpeedKnots || "-"}
+                            </Text>
                           </Table.Cell>
                           <Table.Cell>
                             <Flex gap="2" justifyContent="end">
                               <Button size="sm" variant="outline" asChild>
-                                <Link href={`/activities/${activity.id}/edit`}>Edit</Link>
+                                <Link href={`/activities/${activity.id}/edit`}>
+                                  Edit
+                                </Link>
                               </Button>
                               <Button size="sm" variant="surface" asChild>
-                                <Link href={`/activities/${activity.id}`}>View</Link>
+                                <Link href={`/activities/${activity.id}`}>
+                                  View
+                                </Link>
                               </Button>
                             </Flex>
                           </Table.Cell>
@@ -251,7 +326,10 @@ interface DataListItemProps {
   value: string | undefined | null;
 }
 
-export const DataListItemComponent: React.FC<DataListItemProps> = ({ label, value }) => {
+export const DataListItemComponent: React.FC<DataListItemProps> = ({
+  label,
+  value,
+}) => {
   if (!value) return null;
   return (
     <DataList.Item>

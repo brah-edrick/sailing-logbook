@@ -2,7 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Fieldset, Field, Input, Textarea, Flex, Heading, Box, Stack, Text, Grid, Link } from "@chakra-ui/react";
+import {
+  Button,
+  Fieldset,
+  Field,
+  Input,
+  Textarea,
+  Flex,
+  Heading,
+  Box,
+  Stack,
+  Text,
+  Grid,
+  Link,
+} from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 
 interface FormFieldProps {
@@ -11,7 +24,11 @@ interface FormFieldProps {
   children: React.ReactNode;
 }
 
-const FormField: React.FC<FormFieldProps> = ({ label, required = false, children }) => {
+const FormField: React.FC<FormFieldProps> = ({
+  label,
+  required = false,
+  children,
+}) => {
   return (
     <Field.Root color="white" required={required}>
       <Field.Label color="white">{label}</Field.Label>
@@ -33,17 +50,23 @@ export type BoatFormFields = {
   owner: string;
   notes: string;
   colorHex: string;
-}
+};
 
 type BoatFormProps = {
   onSubmit: (form: BoatFormFields) => void;
   initialValues: BoatFormFields;
   submitButtonText: string;
-}
+};
 
-export const BoatForm: React.FC<BoatFormProps> = ({ onSubmit, initialValues, submitButtonText }) => {
+export const BoatForm: React.FC<BoatFormProps> = ({
+  onSubmit,
+  initialValues,
+  submitButtonText,
+}) => {
   const [form, setForm] = useState(initialValues);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -55,7 +78,6 @@ export const BoatForm: React.FC<BoatFormProps> = ({ onSubmit, initialValues, sub
   return (
     <form onSubmit={handleSubmit}>
       <Stack direction="column" gap="4">
-
         <Box border="1px solid" borderColor="gray.800" borderRadius="md" p="4">
           <Fieldset.Root>
             <Fieldset.Legend>Required Information</Fieldset.Legend>
@@ -175,9 +197,8 @@ export const BoatForm: React.FC<BoatFormProps> = ({ onSubmit, initialValues, sub
         </Button>
       </Flex>
     </form>
-  )
-
-}
+  );
+};
 
 export default function NewBoatPage() {
   const router = useRouter();
@@ -195,8 +216,6 @@ export default function NewBoatPage() {
     notes: "",
     colorHex: "#3b82f6",
   };
-
-
 
   const handleSubmit = async (boat: BoatFormFields) => {
     try {
@@ -248,11 +267,16 @@ export default function NewBoatPage() {
   return (
     <main>
       <Link href="/boats">
-        <Text color="white" >Back to Boats</Text>
+        <Text color="white">Back to Boats</Text>
       </Link>
-      <Heading size="3xl" color="white" mb="6">Add a New Boat</Heading>
-      <BoatForm onSubmit={handleSubmit} initialValues={initialValues} submitButtonText="Add Boat" />
+      <Heading size="3xl" color="white" mb="6">
+        Add a New Boat
+      </Heading>
+      <BoatForm
+        onSubmit={handleSubmit}
+        initialValues={initialValues}
+        submitButtonText="Add Boat"
+      />
     </main>
   );
 }
-
