@@ -54,7 +54,7 @@ export default function ActivitiesPage() {
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -63,9 +63,7 @@ export default function ActivitiesPage() {
   return (
     <main>
       <Flex justifyContent="space-between" gap="4" py="4">
-        <Heading size="3xl" color="white">
-          Activities
-        </Heading>
+        <Heading size="3xl">Activities</Heading>
         <Button variant="surface" asChild>
           <Link href="/activities/new">+ Add New Activity</Link>
         </Button>
@@ -73,7 +71,7 @@ export default function ActivitiesPage() {
 
       {activities.length === 0 ? (
         <Center h="40vh">
-          <Text color="white" fontSize="lg">
+          <Text fontSize="lg">
             No activities found. Create your first activity!
           </Text>
         </Center>
@@ -81,25 +79,21 @@ export default function ActivitiesPage() {
         <Table.Root>
           <Table.Header>
             <Table.Row>
-              <Table.ColumnHeader color="white">Date</Table.ColumnHeader>
-              <Table.ColumnHeader color="white">Boat</Table.ColumnHeader>
-              <Table.ColumnHeader color="white">Duration</Table.ColumnHeader>
-              <Table.ColumnHeader color="white">Purpose</Table.ColumnHeader>
-              <Table.ColumnHeader color="white">
-                Distance (NM)
-              </Table.ColumnHeader>
-              <Table.ColumnHeader color="white">
-                Avg Speed (kts)
-              </Table.ColumnHeader>
-              <Table.ColumnHeader color="white">Wind (kts)</Table.ColumnHeader>
-              <Table.ColumnHeader color="white"></Table.ColumnHeader>
+              <Table.ColumnHeader>Date</Table.ColumnHeader>
+              <Table.ColumnHeader>Boat</Table.ColumnHeader>
+              <Table.ColumnHeader>Duration</Table.ColumnHeader>
+              <Table.ColumnHeader>Purpose</Table.ColumnHeader>
+              <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
+              <Table.ColumnHeader>Avg Speed (kts)</Table.ColumnHeader>
+              <Table.ColumnHeader>Wind (kts)</Table.ColumnHeader>
+              <Table.ColumnHeader></Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {activities.map((activity) => (
               <Table.Row key={activity.id}>
                 <Table.Cell>
-                  <Text color="white">{formatDate(activity.startTime)}</Text>
+                  <Text>{formatDate(activity.startTime)}</Text>
                 </Table.Cell>
                 <Table.Cell>
                   <Link href={`/boats/${activity.boatId}`}>
@@ -111,28 +105,26 @@ export default function ActivitiesPage() {
                           boxSize="12px"
                         />
                       )}
-                      <Text color="white">
-                        {activity.boat?.name || "Unknown Boat"}
-                      </Text>
+                      <Text>{activity.boat?.name || "Unknown Boat"}</Text>
                     </Flex>
                   </Link>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text color="white">
+                  <Text>
                     {calculateDuration(activity.startTime, activity.endTime)}
                   </Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text color="white">{activity.purpose || "-"}</Text>
+                  <Text>{activity.purpose || "-"}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text color="white">{activity.distanceNm || "-"}</Text>
+                  <Text>{activity.distanceNm || "-"}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text color="white">{activity.avgSpeedKnots || "-"}</Text>
+                  <Text>{activity.avgSpeedKnots || "-"}</Text>
                 </Table.Cell>
                 <Table.Cell>
-                  <Text color="white">{activity.windSpeedKnots || "-"}</Text>
+                  <Text>{activity.windSpeedKnots || "-"}</Text>
                 </Table.Cell>
                 <Table.Cell>
                   <Flex gap="2" justifyContent="end">

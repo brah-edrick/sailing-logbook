@@ -26,8 +26,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   children,
 }) => {
   return (
-    <Field.Root color="white" required={required}>
-      <Field.Label color="white">{label}</Field.Label>
+    <Field.Root required={required}>
+      <Field.Label>{label}</Field.Label>
       {children}
     </Field.Root>
   );
@@ -137,7 +137,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
                     </Select.Control>
                     <Portal>
                       <Select.Positioner>
-                        <Select.Content color="white">
+                        <Select.Content>
                           {typeCollection.items.map((type) => (
                             <Select.Item item={type} key={type.value}>
                               <Select.ItemText>{type.label}</Select.ItemText>

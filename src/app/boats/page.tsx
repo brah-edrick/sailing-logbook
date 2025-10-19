@@ -41,7 +41,7 @@ export default function BoatsPage() {
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -50,9 +50,7 @@ export default function BoatsPage() {
   return (
     <main>
       <Flex justifyContent="space-between" gap="4" py="4">
-        <Heading size="3xl" color="white">
-          My Boats
-        </Heading>
+        <Heading size="3xl">My Boats</Heading>
         <Button variant="surface" asChild>
           <Link href="/boats/new">+ Add New Boat</Link>
         </Button>
@@ -61,12 +59,12 @@ export default function BoatsPage() {
       <Table.Root>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeader color="white">Name</Table.ColumnHeader>
-            <Table.ColumnHeader color="white">Make</Table.ColumnHeader>
-            <Table.ColumnHeader color="white">Model</Table.ColumnHeader>
-            <Table.ColumnHeader color="white">Year</Table.ColumnHeader>
-            <Table.ColumnHeader color="white">Length (ft)</Table.ColumnHeader>
-            <Table.ColumnHeader color="white"></Table.ColumnHeader>
+            <Table.ColumnHeader>Name</Table.ColumnHeader>
+            <Table.ColumnHeader>Make</Table.ColumnHeader>
+            <Table.ColumnHeader>Model</Table.ColumnHeader>
+            <Table.ColumnHeader>Year</Table.ColumnHeader>
+            <Table.ColumnHeader>Length (ft)</Table.ColumnHeader>
+            <Table.ColumnHeader></Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -79,20 +77,20 @@ export default function BoatsPage() {
                     borderRadius="full"
                     boxSize="12px"
                   />
-                  <Text color="white">{boat.name}</Text>
+                  <Text>{boat.name}</Text>
                 </Flex>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.make || "-"}</Text>
+                <Text>{boat.make || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.model || "-"}</Text>
+                <Text>{boat.model || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.year || "-"}</Text>
+                <Text>{boat.year || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
-                <Text color="white">{boat.lengthFt || "-"}</Text>
+                <Text>{boat.lengthFt || "-"}</Text>
               </Table.Cell>
               <Table.Cell>
                 <Flex gap="2" justifyContent="end">

@@ -106,7 +106,7 @@ export default function EditBoatPage({
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -115,7 +115,7 @@ export default function EditBoatPage({
   if (!boat) {
     return (
       <main>
-        <Text color="white">Boat not found</Text>
+        <Text>Boat not found</Text>
       </main>
     );
   }
@@ -138,9 +138,9 @@ export default function EditBoatPage({
   return (
     <main>
       <Link href={`/boats/${id}`}>
-        <Text color="white">Back to {boat.name}</Text>
+        <Text>Back to {boat.name}</Text>
       </Link>
-      <Heading size="3xl" color="white" mb="6">
+      <Heading size="3xl" mb="6">
         Edit {boat.name}
       </Heading>
       <BoatForm

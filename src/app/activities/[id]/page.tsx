@@ -106,7 +106,7 @@ export default function ActivityDetailPage({
     return (
       <main>
         <Center h="50vh">
-          <Spinner size="xl" color="white" />
+          <Spinner size="xl" />
         </Center>
       </main>
     );
@@ -116,9 +116,7 @@ export default function ActivityDetailPage({
     return (
       <main>
         <Center h="50vh">
-          <Text color="white" fontSize="xl">
-            Activity not found
-          </Text>
+          <Text fontSize="xl">Activity not found</Text>
         </Center>
       </main>
     );
@@ -128,13 +126,13 @@ export default function ActivityDetailPage({
     <main>
       <div>
         <Link href="/activities">
-          <Text color="white">Back to Activities</Text>
+          <Text>Back to Activities</Text>
         </Link>
       </div>
       <div>
         <header>
           <Flex justifyContent="space-between" py="4">
-            <Heading color="white" size="3xl">
+            <Heading size="3xl">
               Activity - {formatDateTime(activity.startTime)}
             </Heading>
             <Stack direction="row" gap="2">
@@ -248,7 +246,7 @@ export default function ActivityDetailPage({
                 <Card.Title>Notes</Card.Title>
               </Card.Header>
               <Card.Body>
-                <Text color="white">{activity.notes}</Text>
+                <Text>{activity.notes}</Text>
               </Card.Body>
             </Card.Root>
           )}
