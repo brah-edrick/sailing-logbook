@@ -51,6 +51,50 @@ export type ActivityFormFields = {
   notes: string;
 };
 
+const seaStateCollection = createListCollection({
+  items: [
+    { label: "Calm", value: "calm" },
+    { label: "Light", value: "light" },
+    { label: "Moderate", value: "moderate" },
+    { label: "Rough", value: "rough" },
+  ],
+});
+
+const windDirectionCollection = createListCollection({
+  items: [
+    { label: "N", value: "n" },
+    { label: "NE", value: "ne" },
+    { label: "E", value: "e" },
+    { label: "SE", value: "se" },
+    { label: "S", value: "s" },
+    { label: "SW", value: "sw" },
+    { label: "W", value: "w" },
+    { label: "NW", value: "nw" },
+  ],
+});
+
+const conditionCollection = createListCollection({
+  items: [
+    { label: "Sunny", value: "sunny" },
+    { label: "Cloudy", value: "cloudy" },
+    { label: "Rainy", value: "rainy" },
+    { label: "Foggy", value: "foggy" },
+    { label: "Other", value: "other" },
+    { label: "Stormy", value: "stormy" },
+  ],
+});
+
+const purposeCollection = createListCollection({
+  items: [
+    { label: "Racing", value: "racing" },
+    { label: "Cruising", value: "cruising" },
+    { label: "Training", value: "training" },
+    { label: "Charter", value: "charter" },
+    { label: "Delivery", value: "delivery" },
+    { label: "Other", value: "other" },
+  ],
+});
+
 export type ActivityFormProps = {
   onSubmit: (form: ActivityFormFields) => void;
   initialValues: ActivityFormFields;
@@ -169,12 +213,31 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                   />
                 </FormField>
                 <FormField label="Purpose">
-                  <Input
-                    name="purpose"
-                    value={form.purpose}
-                    onChange={handleChange}
-                    placeholder="Racing, Cruising, Training, etc."
-                  />
+                  <Select.Root
+                    collection={purposeCollection}
+                    onValueChange={(details) =>
+                      setForm({ ...form, purpose: details.value[0] })
+                    }
+                    value={form.purpose ? [form.purpose] : []}
+                  >
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Racing, Cruising, Training, Charter, Delivery, Other" />
+                      </Select.Trigger>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content color="white">
+                          {purposeCollection.items.map((purpose) => (
+                            <Select.Item item={purpose} key={purpose.value}>
+                              <Select.ItemText>{purpose.label}</Select.ItemText>
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </FormField>
               </Grid>
             </Fieldset.Content>
@@ -229,12 +292,35 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             <Fieldset.Content>
               <Grid templateColumns="repeat(2, 1fr)" gap="4">
                 <FormField label="Weather Conditions">
-                  <Input
-                    name="weatherConditions"
-                    value={form.weatherConditions}
-                    onChange={handleChange}
-                    placeholder="Sunny, Cloudy, Rainy, etc."
-                  />
+                  <Select.Root
+                    collection={conditionCollection}
+                    onValueChange={(details) =>
+                      setForm({ ...form, weatherConditions: details.value[0] })
+                    }
+                    value={
+                      form.weatherConditions ? [form.weatherConditions] : []
+                    }
+                  >
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Sunny, Cloudy, Rainy, Foggy, Other, Stormy" />
+                      </Select.Trigger>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content color="white">
+                          {conditionCollection.items.map((condition) => (
+                            <Select.Item item={condition} key={condition.value}>
+                              <Select.ItemText>
+                                {condition.label}
+                              </Select.ItemText>
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </FormField>
                 <FormField label="Wind Speed (knots)">
                   <Input
@@ -246,20 +332,67 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                   />
                 </FormField>
                 <FormField label="Wind Direction">
-                  <Input
-                    name="windDirection"
-                    value={form.windDirection}
-                    onChange={handleChange}
-                    placeholder="N, NE, E, SE, S, SW, W, NW"
-                  />
+                  <Select.Root
+                    collection={windDirectionCollection}
+                    onValueChange={(details) =>
+                      setForm({ ...form, windDirection: details.value[0] })
+                    }
+                    value={form.windDirection ? [form.windDirection] : []}
+                  >
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="N, NE, E, SE, S, SW, W, NW" />
+                      </Select.Trigger>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content color="white">
+                          {windDirectionCollection.items.map(
+                            (windDirection) => (
+                              <Select.Item
+                                item={windDirection}
+                                key={windDirection.value}
+                              >
+                                <Select.ItemText>
+                                  {windDirection.label}
+                                </Select.ItemText>
+                                <Select.ItemIndicator />
+                              </Select.Item>
+                            )
+                          )}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </FormField>
                 <FormField label="Sea State">
-                  <Input
-                    name="seaState"
-                    value={form.seaState}
-                    onChange={handleChange}
-                    placeholder="Calm, Slight, Moderate, Rough"
-                  />
+                  <Select.Root
+                    collection={seaStateCollection}
+                    onValueChange={(details) =>
+                      setForm({ ...form, seaState: details.value[0] })
+                    }
+                    value={form.seaState ? [form.seaState] : []}
+                  >
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Select sea state" />
+                      </Select.Trigger>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content color="white">
+                          {seaStateCollection.items.map((seaState) => (
+                            <Select.Item item={seaState} key={seaState.value}>
+                              <Select.ItemText>
+                                {seaState.label}
+                              </Select.ItemText>
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
                 </FormField>
                 <FormField label="Sail Configuration">
                   <Input
