@@ -8,7 +8,7 @@ export async function GET() {
       boat: true,
     },
     orderBy: {
-      startTime: 'desc',
+      startTime: "desc",
     },
   });
   return NextResponse.json(activities);

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Provider } from "@/components/ui/provider"
+import { Provider } from "@/components/ui/provider";
 
 import "./globals.css";
-import { Container } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Link, Stack } from "@chakra-ui/react";
 import { Toaster } from "@/components/ui/toaster";
+import { body, html } from "framer-motion/client";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,10 +29,35 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable}`}
-      >
-        <Provider><Container py="4">{children}</Container><Toaster /></Provider>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <Provider>
+          <Container py="4">
+            <Flex direction="column" gap="4">
+              <Box
+                py="4"
+                borderBottom="1px solid"
+                borderColor="gray.800"
+                w="100%"
+              >
+                <Flex
+                  alignItems="center"
+                  gap="2"
+                  justifyContent="space-between"
+                >
+                  <Heading size="xl" color="white">
+                    Sailing Log
+                  </Heading>
+                  <Stack direction="row" gap="4">
+                    <Link href="/boats">Boats</Link>
+                    <Link href="/activities">Activities</Link>
+                  </Stack>
+                </Flex>
+              </Box>
+              {children}
+            </Flex>
+          </Container>
+          <Toaster />
+        </Provider>
       </body>
     </html>
   );
