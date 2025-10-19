@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Card, DataList, Flex, Heading, Stack, Text, Spinner, Center, Dialog, Portal, CloseButton } from "@chakra-ui/react"
+import { Box, Button, Card, DataList, Flex, Heading, Stack, Text, Spinner, Center, Dialog, Portal, CloseButton, SimpleGrid, GridItem } from "@chakra-ui/react"
 import Link from "next/link";
 import { toaster } from "@/components/ui/toaster";
 
@@ -143,22 +143,37 @@ export default function BoatDetailPage({
             </Stack>
           </Flex>
         </header>
-        <Card.Root>
-          <Card.Body>
-            <DataList.Root orientation="horizontal">
-              <DataListItemComponent label="Type" value={boat.type} />
-              <DataListItemComponent label="Make" value={boat.make} />
-              <DataListItemComponent label="Model" value={boat.model} />
-              <DataListItemComponent label="Year" value={boat.year?.toString()} />
-              <DataListItemComponent label="Length (ft)" value={boat.lengthFt?.toString()} />
-              <DataListItemComponent label="Beam (ft)" value={boat.beamFt?.toString()} />
-              <DataListItemComponent label="Sail Number" value={boat.sailNumber} />
-              <DataListItemComponent label="Home Port" value={boat.homePort} />
-              <DataListItemComponent label="Owner" value={boat.owner} />
-              <DataListItemComponent label="Notes" value={boat.notes} />
-            </DataList.Root>
-          </Card.Body>
-        </Card.Root>
+        <SimpleGrid columns={3} gap={4}>
+          <Card.Root>
+            <Card.Header>
+              <Text color="white">Details</Text>
+            </Card.Header>
+            <Card.Body>
+              <DataList.Root orientation="horizontal">
+                <DataListItemComponent label="Type" value={boat.type} />
+                <DataListItemComponent label="Make" value={boat.make} />
+                <DataListItemComponent label="Model" value={boat.model} />
+                <DataListItemComponent label="Year" value={boat.year?.toString()} />
+                <DataListItemComponent label="Length (ft)" value={boat.lengthFt?.toString()} />
+                <DataListItemComponent label="Beam (ft)" value={boat.beamFt?.toString()} />
+                <DataListItemComponent label="Sail Number" value={boat.sailNumber} />
+                <DataListItemComponent label="Home Port" value={boat.homePort} />
+                <DataListItemComponent label="Owner" value={boat.owner} />
+                <DataListItemComponent label="Notes" value={boat.notes} />
+              </DataList.Root>
+            </Card.Body>
+          </Card.Root>
+          <GridItem colSpan={2}>
+            <Card.Root >
+              <Card.Header>
+                <Text color="white">Activities</Text>
+              </Card.Header>
+              <Card.Body>
+
+              </Card.Body>
+            </Card.Root>
+          </GridItem>
+        </SimpleGrid>
       </div>
     </main>
   );

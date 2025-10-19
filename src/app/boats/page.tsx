@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Box, Button, Card, DataList, Flex, For, Heading, SimpleGrid, Spinner, Center, Text } from "@chakra-ui/react";
-import { DataListItemComponent } from "./[id]/page";
+import { Box, Button, Flex, Heading, Spinner, Center, Text, Table } from "@chakra-ui/react";
 
 export default function BoatsPage() {
   const [boats, setBoats] = useState<any[]>([]);
@@ -48,42 +47,56 @@ export default function BoatsPage() {
         </Button>
       </Flex>
 
-      <SimpleGrid columns={4} gap="4">
-        <For each={boats}>
-          {(boat) => (
-            <Card.Root size="lg" key={boat.id} >
-              <Card.Body gap="2">
-                <Card.Title>
-                  <Flex alignItems="center" gap="1">
-                    {boat.name}
-                    <Box
-                      style={{ backgroundColor: boat.colorHex || '#FFFFFF' }}
-                      borderRadius="full"
-                      boxSize="16px"
-                      ml="2"
-                    />
-                  </Flex>
-                </Card.Title>
-                <DataList.Root orientation="horizontal">
-                  <DataListItemComponent label="Type" value={boat.make} />
-                  {boat.model && (
-                    <DataListItemComponent label="Model" value={boat.model} />
-                  )}
-                </DataList.Root>
-              </Card.Body>
-              <Card.Footer gap="2">
-                <Button variant="outline" asChild >
-                  <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
-                </Button>
-                <Button variant="surface" asChild >
-                  <Link href={`/boats/${boat.id}`}>View</Link>
-                </Button>
-
-              </Card.Footer>
-            </Card.Root>
-          )}
-        </For>
-      </  SimpleGrid>
+      <Table.Root>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader color="white">Name</Table.ColumnHeader>
+            <Table.ColumnHeader color="white">Make</Table.ColumnHeader>
+            <Table.ColumnHeader color="white">Model</Table.ColumnHeader>
+            <Table.ColumnHeader color="white">Year</Table.ColumnHeader>
+            <Table.ColumnHeader color="white">Length (ft)</Table.ColumnHeader>
+            <Table.ColumnHeader color="white"></Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {boats.map((boat) => (
+            <Table.Row key={boat.id}>
+              <Table.Cell>
+                <Flex alignItems="center" gap="2">
+                  <Box
+                    style={{ backgroundColor: boat.colorHex || '#FFFFFF' }}
+                    borderRadius="full"
+                    boxSize="12px"
+                  />
+                  <Text color="white">{boat.name}</Text>
+                </Flex>
+              </Table.Cell>
+              <Table.Cell>
+                <Text color="white">{boat.make || '-'}</Text>
+              </Table.Cell>
+              <Table.Cell>
+                <Text color="white">{boat.model || '-'}</Text>
+              </Table.Cell>
+              <Table.Cell>
+                <Text color="white">{boat.year || '-'}</Text>
+              </Table.Cell>
+              <Table.Cell>
+                <Text color="white">{boat.lengthFt || '-'}</Text>
+              </Table.Cell>
+              <Table.Cell>
+                <Flex gap="2" justifyContent="end">
+                  <Button size="sm" variant="outline" asChild>
+                    <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
+                  </Button>
+                  <Button size="sm" variant="surface" asChild>
+                    <Link href={`/boats/${boat.id}`}>View</Link>
+                  </Button>
+                </Flex>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
     </main>
   );
 }
