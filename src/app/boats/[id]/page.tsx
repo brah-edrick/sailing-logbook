@@ -240,8 +240,7 @@ export default function BoatDetailPage({
                         <Table.ColumnHeader>Duration</Table.ColumnHeader>
                         <Table.ColumnHeader>Purpose</Table.ColumnHeader>
                         <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
-                        <Table.ColumnHeader>Avg Speed (kts)</Table.ColumnHeader>
-                        <Table.ColumnHeader>Wind (kts)</Table.ColumnHeader>
+
                         <Table.ColumnHeader></Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
@@ -260,17 +259,17 @@ export default function BoatDetailPage({
                             </Text>
                           </Table.Cell>
                           <Table.Cell>
-                            <Text>{activity.purpose || "-"}</Text>
+                            <Text>
+                              {activity.purpose
+                                ? activity.purpose.charAt(0).toUpperCase() +
+                                  activity.purpose.slice(1)
+                                : "-"}
+                            </Text>
                           </Table.Cell>
                           <Table.Cell>
                             <Text>{activity.distanceNm || "-"}</Text>
                           </Table.Cell>
-                          <Table.Cell>
-                            <Text>{activity.avgSpeedKnots || "-"}</Text>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Text>{activity.windSpeedKnots || "-"}</Text>
-                          </Table.Cell>
+
                           <Table.Cell>
                             <Flex gap="2" justifyContent="end">
                               <Button size="sm" variant="outline" asChild>
