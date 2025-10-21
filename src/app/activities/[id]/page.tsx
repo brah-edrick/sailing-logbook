@@ -1,9 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
-  Box,
   Button,
   Card,
   DataList,
@@ -11,10 +6,12 @@ import {
   Heading,
   Stack,
   Text,
-  Spinner,
-  Center,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { SafeDeleteEntityButton } from "@/components/ui/safe-delete-entity-button";
+import { ApiSailingActivity } from "@/types/api";
+import { formatDateTime, calculateDuration } from "@/utils/date";
 
 interface DataListItemProps {
   label: string;
@@ -34,93 +31,33 @@ const DataListItemComponent: React.FC<DataListItemProps> = ({
   );
 };
 
-const formatDateTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString();
-};
-
-const calculateDuration = (startTime: string, endTime: string) => {
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-  const durationMs = end.getTime() - start.getTime();
-  const hours = Math.floor(durationMs / (1000 * 60 * 60));
-  const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
-};
-
-export default function ActivityDetailPage({
+export default async function ActivityDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const router = useRouter();
-  const [activity, setActivity] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [id, setId] = useState<string>("");
+  const { id } = await params;
+  const numericId = Number(id);
 
-  useEffect(() => {
-    const getParams = async () => {
-      const resolvedParams = await params;
-      setId(resolvedParams.id);
-    };
-    getParams();
-  }, [params]);
+  if (isNaN(numericId)) {
+    notFound();
+  }
 
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchActivity = async () => {
-      try {
-        const res = await fetch(`/api/activities/${id}`);
-        if (res.ok) {
-          const activityData = await res.json();
-          setActivity(activityData);
-        } else if (res.status === 404) {
-          router.push("/404");
-        } else {
-          console.error("Failed to fetch activity");
-        }
-      } catch (error) {
-        console.error("Error fetching activity:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivity();
-  }, [id, router]);
-
-  const deleteActivity = async () => {
-    try {
-      const res = await fetch(`/api/activities/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        router.push("/activities");
-      }
-    } catch (error) {
-      console.error("Error deleting activity:", error);
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities/${id}`,
+    {
+      cache: "no-store",
     }
-  };
+  );
 
-  if (loading) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Spinner size="xl" />
-        </Center>
-      </main>
-    );
+  if (!response.ok) {
+    if (response.status === 404) {
+      notFound();
+    }
+    throw new Error("Failed to fetch activity");
   }
 
-  if (!activity) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Text fontSize="xl">Activity not found</Text>
-        </Center>
-      </main>
-    );
-  }
+  const activity = (await response.json()) as ApiSailingActivity;
 
   return (
     <main>
@@ -139,13 +76,11 @@ export default function ActivityDetailPage({
               <Button variant="surface" asChild>
                 <Link href={`/activities/${activity.id}/edit`}>Edit</Link>
               </Button>
-              <Button
-                variant="surface"
-                color="red.500"
-                onClick={deleteActivity}
-              >
-                Delete
-              </Button>
+              <SafeDeleteEntityButton
+                entityId={activity.id}
+                entityName={`Activity - ${formatDateTime(activity.startTime)}`}
+                entityType="activity"
+              />
             </Stack>
           </Flex>
         </header>

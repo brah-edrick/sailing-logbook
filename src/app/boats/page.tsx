@@ -1,51 +1,20 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Spinner,
-  Center,
-  Text,
-  Table,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text, Table } from "@chakra-ui/react";
+import { ApiBoat } from "@/types/api";
 
-export default function BoatsPage() {
-  const [boats, setBoats] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function BoatsPage() {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats`,
+    {
+      cache: "no-store",
+    }
+  );
 
-  useEffect(() => {
-    const fetchBoats = async () => {
-      try {
-        const res = await fetch("/api/boats");
-        if (res.ok) {
-          const boatsData = await res.json();
-          setBoats(boatsData);
-        } else {
-          console.error("Failed to fetch boats");
-        }
-      } catch (error) {
-        console.error("Error fetching boats:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBoats();
-  }, []);
-
-  if (loading) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Spinner size="xl" />
-        </Center>
-      </main>
-    );
+  if (!response.ok) {
+    throw new Error("Failed to fetch boats");
   }
+
+  const boats = (await response.json()) as ApiBoat[];
 
   return (
     <main>
