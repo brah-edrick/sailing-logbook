@@ -1,5 +1,5 @@
 import { Heading, Text, Link } from "@chakra-ui/react";
-import { NewActivityForm } from "./new-activity-form";
+import { NewActivityForm } from "@/components/form/activity";
 
 export default async function NewActivityPage({
   searchParams,

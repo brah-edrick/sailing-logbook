@@ -1,6 +1,6 @@
 import { Heading, Text, Link } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
-import { EditActivityForm } from "./edit-activity-form";
+import { EditActivityForm } from "@/components/form/activity";
 
 export default async function EditActivityPage({
   params,

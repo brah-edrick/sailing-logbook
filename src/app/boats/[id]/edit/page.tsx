@@ -1,6 +1,6 @@
 import { Heading, Text, Link } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
-import { EditBoatForm } from "./edit-boat-form";
+import { EditBoatForm } from "@/components/form/boat";
 
 export default async function EditBoatPage({
   params,
