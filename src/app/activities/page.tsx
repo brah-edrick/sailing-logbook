@@ -1,64 +1,29 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Box,
   Button,
   Flex,
   Heading,
-  Spinner,
   Center,
   Text,
   Table,
 } from "@chakra-ui/react";
+import { ApiSailingActivityWithBoat } from "@/types/api";
+import { formatDate, calculateDuration } from "@/utils/date";
 
-export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString();
-};
+export default async function ActivitiesPage() {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities`,
+    {
+      cache: "no-store",
+    }
+  );
 
-export const calculateDuration = (startTime: string, endTime: string) => {
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-  const durationMs = end.getTime() - start.getTime();
-  const hours = Math.floor(durationMs / (1000 * 60 * 60));
-  const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
-};
-
-export default function ActivitiesPage() {
-  const [activities, setActivities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const res = await fetch("/api/activities");
-        if (res.ok) {
-          const activitiesData = await res.json();
-          setActivities(activitiesData);
-        } else {
-          console.error("Failed to fetch activities");
-        }
-      } catch (error) {
-        console.error("Error fetching activities:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
-  }, []);
-
-  if (loading) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Spinner size="xl" />
-        </Center>
-      </main>
-    );
+  if (!response.ok) {
+    throw new Error("Failed to fetch activities");
   }
+
+  const activities = (await response.json()) as ApiSailingActivityWithBoat[];
 
   return (
     <main>

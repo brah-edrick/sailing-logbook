@@ -5,7 +5,6 @@ import { Provider } from "@/components/ui/provider";
 import "./globals.css";
 import { Box, Container, Flex, Heading, Link, Stack } from "@chakra-ui/react";
 import { Toaster } from "@/components/ui/toaster";
-import { body, html } from "framer-motion/client";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

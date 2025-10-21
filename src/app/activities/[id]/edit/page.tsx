@@ -1,183 +1,59 @@
-"use client";
+import { Heading, Text, Link } from "@chakra-ui/react";
+import { notFound } from "next/navigation";
+import { EditActivityForm } from "./edit-activity-form";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Heading, Text, Link, Spinner, Center } from "@chakra-ui/react";
-import { toaster } from "@/components/ui/toaster";
-import { ActivityFormFields, ActivityForm } from "@/components/form/activity";
-
-export default function EditActivityPage({
+export default async function EditActivityPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const router = useRouter();
-  const [activity, setActivity] = useState<any>(null);
-  const [boats, setBoats] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [id, setId] = useState<string>("");
+  const { id } = await params;
+  const numericId = Number(id);
 
-  useEffect(() => {
-    const getParams = async () => {
-      const resolvedParams = await params;
-      setId(resolvedParams.id);
-    };
-    getParams();
-  }, [params]);
+  if (isNaN(numericId)) {
+    notFound();
+  }
 
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchData = async () => {
-      try {
-        // Fetch both activity and boats data
-        const [activityRes, boatsRes] = await Promise.all([
-          fetch(`/api/activities/${id}`),
-          fetch("/api/boats"),
-        ]);
-
-        if (activityRes.ok && boatsRes.ok) {
-          const [activityData, boatsData] = await Promise.all([
-            activityRes.json(),
-            boatsRes.json(),
-          ]);
-          setActivity(activityData);
-          setBoats(boatsData);
-        } else {
-          toaster.create({
-            title: "Error",
-            description: "Failed to load activity data",
-            type: "error",
-          });
-          router.push("/activities");
-        }
-      } catch (error) {
-        toaster.create({
-          title: "Error",
-          description: "Error loading activity data",
-          type: "error",
-        });
-        router.push("/activities");
-      } finally {
-        setLoading(false);
+  const [activityResponse, boatsResponse] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities/${id}`,
+      {
+        cache: "no-store",
       }
-    };
-
-    fetchData();
-  }, [id, router]);
-
-  const handleSubmit = async (formData: ActivityFormFields) => {
-    const payload = {
-      boatId: Number(formData.boatId),
-      startTime: new Date(formData.startTime).toISOString(),
-      endTime: new Date(formData.endTime).toISOString(),
-      departureLocation: formData.departureLocation || null,
-      returnLocation: formData.returnLocation || null,
-      distanceNm: formData.distanceNm ? Number(formData.distanceNm) : null,
-      avgSpeedKnots: formData.avgSpeedKnots
-        ? Number(formData.avgSpeedKnots)
-        : null,
-      weatherConditions: formData.weatherConditions || null,
-      windSpeedKnots: formData.windSpeedKnots
-        ? Number(formData.windSpeedKnots)
-        : null,
-      windDirection: formData.windDirection || null,
-      seaState: formData.seaState || null,
-      sailConfiguration: formData.sailConfiguration || null,
-      purpose: formData.purpose || null,
-      notes: formData.notes || null,
-    };
-
-    try {
-      const res = await fetch(`/api/activities/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        toaster.create({
-          title: "Success",
-          description: "Activity updated successfully",
-          type: "success",
-        });
-        router.push(`/activities/${id}`);
-      } else {
-        toaster.create({
-          title: "Error",
-          description: "Failed to update activity",
-          type: "error",
-        });
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats`,
+      {
+        cache: "no-store",
       }
-    } catch (error) {
-      toaster.create({
-        title: "Error",
-        description: "Error updating activity",
-        type: "error",
-      });
+    ),
+  ]);
+
+  if (!activityResponse.ok) {
+    if (activityResponse.status === 404) {
+      notFound();
     }
-  };
-
-  if (loading) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Spinner size="xl" />
-        </Center>
-      </main>
-    );
+    throw new Error("Failed to fetch activity");
   }
 
-  if (!activity) {
-    return (
-      <main>
-        <Text>Activity not found</Text>
-      </main>
-    );
+  if (!boatsResponse.ok) {
+    throw new Error("Failed to fetch boats");
   }
 
-  // Format datetime for datetime-local input
-  const formatDateTimeLocal = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
-  const initialValues: ActivityFormFields = {
-    boatId: activity.boatId?.toString() || "",
-    startTime: formatDateTimeLocal(activity.startTime),
-    endTime: formatDateTimeLocal(activity.endTime),
-    departureLocation: activity.departureLocation || "",
-    returnLocation: activity.returnLocation || "",
-    distanceNm: activity.distanceNm?.toString() || "",
-    avgSpeedKnots: activity.avgSpeedKnots?.toString() || "",
-    weatherConditions: activity.weatherConditions || "",
-    windSpeedKnots: activity.windSpeedKnots?.toString() || "",
-    windDirection: activity.windDirection || "",
-    seaState: activity.seaState || "",
-    sailConfiguration: activity.sailConfiguration || "",
-    purpose: activity.purpose || "",
-    notes: activity.notes || "",
-  };
+  const [activity, boats] = await Promise.all([
+    activityResponse.json(),
+    boatsResponse.json(),
+  ]);
 
   return (
     <main>
-      <Link href={`/activities/${id}`}>
+      <Link href={`/activities/${activity.id}`}>
         <Text>Back to Activity</Text>
       </Link>
       <Heading size="3xl" mb="6">
         Edit Activity
       </Heading>
-      <ActivityForm
-        onSubmit={handleSubmit}
-        initialValues={initialValues}
-        submitButtonText="Update Activity"
-        boats={boats}
-      />
+      <EditActivityForm activity={activity} boats={boats} />
     </main>
   );
 }

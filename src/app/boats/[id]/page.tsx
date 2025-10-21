@@ -1,7 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
@@ -11,106 +7,59 @@ import {
   Heading,
   Stack,
   Text,
-  Spinner,
   Center,
-  Dialog,
-  Portal,
-  CloseButton,
   SimpleGrid,
   GridItem,
   Table,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { toaster } from "@/components/ui/toaster";
-import { calculateDuration, formatDate } from "@/app/activities/page";
+import { calculateDuration, formatDate } from "@/utils/date";
+import { notFound } from "next/navigation";
+import { SafeDeleteEntityButton } from "@/components/ui/safe-delete-entity-button";
+import { ApiBoat, ApiSailingActivity } from "@/types/api";
 
-export default function BoatDetailPage({
+export default async function BoatDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const router = useRouter();
-  const [boat, setBoat] = useState<any>(null);
-  const [activities, setActivities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [id, setId] = useState<string>("");
+  const { id } = await params;
+  const numericId = Number(id);
 
-  useEffect(() => {
-    const getParams = async () => {
-      const resolvedParams = await params;
-      setId(resolvedParams.id);
-    };
-    getParams();
-  }, [params]);
-
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchBoat = async () => {
-      try {
-        const res = await fetch(`/api/boats/${id}`);
-        if (res.ok) {
-          const boatData = await res.json();
-          setBoat(boatData);
-        } else if (res.status === 404) {
-          router.push("/404");
-        } else {
-          console.error("Failed to fetch boat");
-        }
-      } catch (error) {
-        console.error("Error fetching boat:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBoat();
-  }, [id, router]);
-
-  useEffect(() => {
-    const fetchActivities = async () => {
-      const res = await fetch(`/api/boats/${id}/activities`);
-      if (res.ok) {
-        const activitiesData = await res.json();
-        setActivities(activitiesData);
-      }
-    };
-    fetchActivities();
-  }, [id, router]);
-
-  if (loading) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Spinner size="xl" />
-        </Center>
-      </main>
-    );
+  if (isNaN(numericId)) {
+    notFound();
   }
 
-  if (!boat) {
-    return (
-      <main>
-        <Center h="50vh">
-          <Text fontSize="xl">Boat not found</Text>
-        </Center>
-      </main>
-    );
-  }
+  const [boatResponse, activitiesResponse] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}`,
+      {
+        cache: "no-store",
+      }
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}/activities`,
+      {
+        cache: "no-store",
+      }
+    ),
+  ]);
 
-  const handleDelete = async () => {
-    const res = await fetch(`/api/boats/${id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      toaster.create({
-        title: "Success",
-        description: `${boat.name} deleted successfully`,
-        type: "success",
-      });
-      router.push("/boats");
+  if (!boatResponse.ok) {
+    if (boatResponse.status === 404) {
+      notFound();
     }
-  };
+    throw new Error("Failed to fetch boat");
+  }
+
+  if (!activitiesResponse.ok) {
+    throw new Error("Failed to fetch boat activities");
+  }
+
+  const [boat, activities] = await Promise.all([
+    boatResponse.json() as Promise<ApiBoat>,
+    activitiesResponse.json() as Promise<ApiSailingActivity[]>,
+  ]);
 
   return (
     <main>
@@ -140,45 +89,11 @@ export default function BoatDetailPage({
               <Button variant="surface" asChild>
                 <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
               </Button>
-              <Dialog.Root>
-                <Dialog.Trigger asChild>
-                  <Button variant="surface" color="red.500">
-                    Delete
-                  </Button>
-                </Dialog.Trigger>
-                <Portal>
-                  <Dialog.Backdrop />
-                  <Dialog.Positioner>
-                    <Dialog.Content>
-                      <Dialog.Header>
-                        <Dialog.Title>Dialog Title</Dialog.Title>
-                      </Dialog.Header>
-                      <Dialog.Body>
-                        <Text>
-                          Are you sure you want to delete {boat.name}?
-                        </Text>
-                      </Dialog.Body>
-                      <Dialog.Footer>
-                        <Dialog.ActionTrigger asChild>
-                          <Button variant="outline">Cancel</Button>
-                        </Dialog.ActionTrigger>
-                        <Dialog.ActionTrigger asChild>
-                          <Button
-                            onClick={handleDelete}
-                            variant="surface"
-                            color="red.500"
-                          >
-                            Confirm Delete {boat.name}
-                          </Button>
-                        </Dialog.ActionTrigger>
-                      </Dialog.Footer>
-                      <Dialog.CloseTrigger asChild>
-                        <CloseButton size="sm" />
-                      </Dialog.CloseTrigger>
-                    </Dialog.Content>
-                  </Dialog.Positioner>
-                </Portal>
-              </Dialog.Root>
+              <SafeDeleteEntityButton
+                entityId={boat.id}
+                entityName={boat.name}
+                entityType="boat"
+              />
             </Stack>
           </Flex>
         </header>
@@ -245,7 +160,7 @@ export default function BoatDetailPage({
                       </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                      {activities.map((activity) => (
+                      {activities.map((activity: ApiSailingActivity) => (
                         <Table.Row key={activity.id}>
                           <Table.Cell>
                             <Text>{formatDate(activity.startTime)}</Text>
@@ -303,7 +218,7 @@ interface DataListItemProps {
   value: string | undefined | null;
 }
 
-export const DataListItemComponent: React.FC<DataListItemProps> = ({
+const DataListItemComponent: React.FC<DataListItemProps> = ({
   label,
   value,
 }) => {

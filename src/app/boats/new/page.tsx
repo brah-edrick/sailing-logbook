@@ -60,7 +60,7 @@ export default function NewBoatPage() {
           type: "error",
         });
       }
-    } catch (error) {
+    } catch {
       toaster.create({
         title: "Error",
         description: "Network error while creating boat",
