@@ -4,7 +4,7 @@ import { z } from "zod";
 // ENUMS - Shared enum definitions
 // ============================================================================
 
-const boatTypeEnum = z.enum(["monohull", "trimaran", "catamaran"]);
+const boatTypeEnum = z.enum(["monohull", "trimaran", "catamaran", "racer"]);
 const weatherEnum = z.enum([
   "sunny",
   "cloudy",

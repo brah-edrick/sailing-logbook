@@ -13,6 +13,7 @@ import {
   Select,
   Portal,
   NumberInput,
+  Text,
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -54,6 +55,7 @@ const typeCollection = createListCollection({
     { label: "Monohull", value: "monohull" },
     { label: "Trimaran", value: "trimaran" },
     { label: "Catamaran", value: "catamaran" },
+    { label: "Racer", value: "racer" },
   ],
 });
 
@@ -70,6 +72,54 @@ export const BoatForm: React.FC<BoatFormProps> = ({
   submitButtonText,
   isLoading = false,
 }) => {
+  // Debug: Log initial values and validation results
+  console.log("=== FORM DEBUGGING ===");
+  console.log("Initial values being validated:", initialValues);
+  console.log(
+    "Type value specifically:",
+    initialValues.type,
+    "Type:",
+    typeof initialValues.type
+  );
+
+  // Validate initial values before rendering
+  const validationResult = boatFormSchema.safeParse(initialValues);
+
+  console.log("Validation result success:", validationResult.success);
+  if (!validationResult.success) {
+    console.log("Validation errors:", validationResult.error.issues);
+  }
+
+  if (!validationResult.success) {
+    console.error(
+      "Invalid initial form values:",
+      validationResult.error.issues
+    );
+    return (
+      <Box
+        p="6"
+        bg="red.50"
+        borderRadius="md"
+        border="1px solid"
+        borderColor="red.200"
+      >
+        <Text color="red.600" fontWeight="semibold" mb="2">
+          Form Error
+        </Text>
+        <Text color="red.500" fontSize="sm">
+          Invalid initial values detected. Please check the console for details.
+        </Text>
+        <Text color="red.400" fontSize="xs" mt="2">
+          {validationResult.error.issues.map((issue, index) => (
+            <div key={index}>
+              {issue.path.join(".")}: {issue.message}
+            </div>
+          ))}
+        </Text>
+      </Box>
+    );
+  }
+
   const {
     register,
     handleSubmit,
@@ -84,7 +134,10 @@ export const BoatForm: React.FC<BoatFormProps> = ({
       type: initialValues.type || null,
       make: initialValues.make || "",
       model: initialValues.model || "",
-      year: initialValues.year,
+      year:
+        initialValues.year && initialValues.year !== ""
+          ? initialValues.year
+          : undefined,
       lengthFt: initialValues.lengthFt || "",
       beamFt: initialValues.beamFt || "",
       sailNumber: initialValues.sailNumber || "",
@@ -98,6 +151,14 @@ export const BoatForm: React.FC<BoatFormProps> = ({
   const handleFormSubmit = (data: BoatFormInput) => {
     onSubmit(data);
   };
+
+  // Debug: Log form state changes
+  console.log("Form state:", {
+    errors,
+    isValid,
+    isDirty,
+    values: watch(),
+  });
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -214,31 +275,17 @@ export const BoatForm: React.FC<BoatFormProps> = ({
                 </Portal>
               </Select.Root>
             </FormField>
-
             <FormField label="Year" error={errors.year?.message}>
-              <NumberInput.Root
-                value={watch("year") || ""}
-                onValueChange={(details) => {
-                  if (details.value === "") {
-                    setValue("year", undefined);
-                  } else {
-                    setValue("year", details.value.toString());
-                  }
-                }}
-                min={1800}
+              <Input
+                {...register("year")}
+                type="number"
+                placeholder="2020"
+                min={1900}
                 max={new Date().getFullYear() + 1}
-                width="100%"
-              >
-                <NumberInput.Control>
-                  <NumberInput.IncrementTrigger />
-                  <NumberInput.DecrementTrigger />
-                </NumberInput.Control>
-                <NumberInput.Input
-                  placeholder="2020"
-                  bg="bg.subtle"
-                  _focus={{ bg: "bg.muted", borderColor: "blue.500" }}
-                />
-              </NumberInput.Root>
+                size="md"
+                bg="bg.subtle"
+                _focus={{ bg: "bg.muted", borderColor: "blue.500" }}
+              />
             </FormField>
 
             <FormField label="Sail Number" error={errors.sailNumber?.message}>
@@ -281,19 +328,20 @@ export const BoatForm: React.FC<BoatFormProps> = ({
             templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
             gap={{ base: "4", md: "6" }}
           >
-            <FormField
-              label="Length (ft)"
-              required
-              error={errors.lengthFt?.message}
-            >
+            <FormField label="Length" required error={errors.lengthFt?.message}>
               <NumberInput.Root
                 value={watch("lengthFt") || ""}
                 onValueChange={(details) =>
                   setValue("lengthFt", details.value.toString())
                 }
-                step={0.1}
+                step={1}
                 min={0}
                 width="100%"
+                formatOptions={{
+                  style: "unit",
+                  unit: "foot",
+                  unitDisplay: "short",
+                }}
               >
                 <NumberInput.Control>
                   <NumberInput.IncrementTrigger />
@@ -307,15 +355,20 @@ export const BoatForm: React.FC<BoatFormProps> = ({
               </NumberInput.Root>
             </FormField>
 
-            <FormField label="Beam (ft)" error={errors.beamFt?.message}>
+            <FormField label="Beam" error={errors.beamFt?.message}>
               <NumberInput.Root
                 value={watch("beamFt") || ""}
                 onValueChange={(details) =>
                   setValue("beamFt", details.value.toString())
                 }
-                step={0.1}
+                step={1}
                 min={0}
                 width="100%"
+                formatOptions={{
+                  style: "unit",
+                  unit: "foot",
+                  unitDisplay: "short",
+                }}
               >
                 <NumberInput.Control>
                   <NumberInput.IncrementTrigger />
@@ -418,16 +471,14 @@ export const BoatForm: React.FC<BoatFormProps> = ({
         <Flex
           justifyContent={{ base: "stretch", sm: "flex-end" }}
           gap="4"
-          pt="4"
-          borderTop="1px solid"
-          borderColor="border.subtle"
+          pt="1"
         >
           <Button
             type="submit"
-            size="lg"
-            colorScheme="blue"
+            variant="surface"
+            colorPalette={isValid ? "green" : "gray"}
             loading={isLoading}
-            disabled={!isValid || !isDirty}
+            disabled={!isValid}
             w={{ base: "full", sm: "auto" }}
             minW="140px"
           >

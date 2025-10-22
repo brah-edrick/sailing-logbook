@@ -9,6 +9,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { ApiBoat } from "@/types/api";
+import { formatDisplayValue, getFieldUnit } from "@/utils/date";
 
 export default async function BoatsPage() {
   const response = await fetch(
@@ -71,7 +72,7 @@ export default async function BoatsPage() {
                 <Table.ColumnHeader>Make</Table.ColumnHeader>
                 <Table.ColumnHeader>Model</Table.ColumnHeader>
                 <Table.ColumnHeader>Year</Table.ColumnHeader>
-                <Table.ColumnHeader>Length (ft)</Table.ColumnHeader>
+                <Table.ColumnHeader>Length</Table.ColumnHeader>
                 <Table.ColumnHeader></Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
@@ -98,7 +99,11 @@ export default async function BoatsPage() {
                     <Text>{boat.year || "-"}</Text>
                   </Table.Cell>
                   <Table.Cell>
-                    <Text>{boat.lengthFt || "-"}</Text>
+                    <Text>
+                      {boat.lengthFt
+                        ? `${formatDisplayValue(boat.lengthFt.toString(), "lengthFt")} ${getFieldUnit("lengthFt")}`
+                        : "-"}
+                    </Text>
                   </Table.Cell>
                   <Table.Cell>
                     <Flex gap="2" justifyContent="end">

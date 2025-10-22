@@ -3,22 +3,34 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
 import { ApiSailingActivity } from "@/types/api";
-import { formatDateTime, calculateDuration } from "@/utils/date";
+import {
+  formatDateTime,
+  calculateDuration,
+  formatDisplayValue,
+  getFieldUnit,
+} from "@/utils/date";
 
 interface DataFieldProps {
   label: string;
   value: string | undefined | null;
+  fieldName?: string;
 }
 
-const DataField: React.FC<DataFieldProps> = ({ label, value }) => {
+const DataField: React.FC<DataFieldProps> = ({ label, value, fieldName }) => {
   if (!value) return null;
+  const unit = getFieldUnit(fieldName);
   return (
     <Box>
       <Text fontSize="sm" color="fg.muted" mb="1">
         {label}
       </Text>
       <Text fontSize="md" fontWeight="medium">
-        {value}
+        {formatDisplayValue(value, fieldName)}
+        {unit && (
+          <Text as="span" color="fg.muted" ml="1">
+            {unit}
+          </Text>
+        )}
       </Text>
     </Box>
   );
@@ -171,12 +183,14 @@ export default async function ActivityDetailPage({
           />
           <DataField label="Return Location" value={activity.returnLocation} />
           <DataField
-            label="Distance (NM)"
+            label="Distance"
             value={activity.distanceNm?.toString()}
+            fieldName="distanceNm"
           />
           <DataField
-            label="Average Speed (knots)"
+            label="Average Speed"
             value={activity.avgSpeedKnots?.toString()}
+            fieldName="avgSpeedKnots"
           />
         </Grid>
       </Box>
@@ -215,10 +229,15 @@ export default async function ActivityDetailPage({
         >
           <DataField label="Weather" value={activity.weatherConditions} />
           <DataField
-            label="Wind Speed (knots)"
+            label="Wind Speed"
             value={activity.windSpeedKnots?.toString()}
+            fieldName="windSpeedKnots"
           />
-          <DataField label="Wind Direction" value={activity.windDirection} />
+          <DataField
+            label="Wind Direction"
+            value={activity.windDirection}
+            fieldName="windDirection"
+          />
           <DataField label="Sea State" value={activity.seaState} />
           <DataField
             label="Sail Configuration"
