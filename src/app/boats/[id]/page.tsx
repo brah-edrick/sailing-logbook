@@ -10,7 +10,12 @@ import {
 } from "@chakra-ui/react";
 import { LuCalendar, LuShip } from "react-icons/lu";
 import Link from "next/link";
-import { calculateDuration, formatDate } from "@/utils/date";
+import {
+  calculateDuration,
+  formatDate,
+  formatDisplayValue,
+  getFieldUnit,
+} from "@/utils/date";
 import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
 import { ApiBoat, ApiSailingActivity } from "@/types/api";
@@ -64,7 +69,7 @@ export default async function BoatDetailPage({
       <Box>
         <Flex justifyContent="space-between" alignItems="flex-start" mb="4">
           <Box>
-            <Flex alignItems="baseline" gap="2" mb="2">
+            <Flex alignItems="center" gap="2" mb="2">
               <Box
                 as="h1"
                 fontSize={{ base: "2xl", md: "3xl" }}
@@ -182,7 +187,7 @@ export default async function BoatDetailPage({
                     <Table.ColumnHeader>Date</Table.ColumnHeader>
                     <Table.ColumnHeader>Duration</Table.ColumnHeader>
                     <Table.ColumnHeader>Purpose</Table.ColumnHeader>
-                    <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
+                    <Table.ColumnHeader>Distance</Table.ColumnHeader>
                     <Table.ColumnHeader></Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
@@ -209,7 +214,11 @@ export default async function BoatDetailPage({
                         </Text>
                       </Table.Cell>
                       <Table.Cell>
-                        <Text>{activity.distanceNm || "-"}</Text>
+                        <Text>
+                          {activity.distanceNm
+                            ? `${formatDisplayValue(activity.distanceNm.toString(), "distanceNm")} ${getFieldUnit("distanceNm")}`
+                            : "-"}
+                        </Text>
                       </Table.Cell>
                       <Table.Cell>
                         <Flex gap="2" justifyContent="end">
@@ -315,10 +324,15 @@ export default async function BoatDetailPage({
                 gap={{ base: "4", md: "6" }}
               >
                 <DataField
-                  label="Length (ft)"
+                  label="Length"
                   value={boat.lengthFt?.toString()}
+                  fieldName="lengthFt"
                 />
-                <DataField label="Beam (ft)" value={boat.beamFt?.toString()} />
+                <DataField
+                  label="Beam"
+                  value={boat.beamFt?.toString()}
+                  fieldName="beamFt"
+                />
               </Grid>
             </Box>
 
@@ -377,17 +391,24 @@ export default async function BoatDetailPage({
 interface DataFieldProps {
   label: string;
   value: string | undefined | null;
+  fieldName?: string;
 }
 
-const DataField: React.FC<DataFieldProps> = ({ label, value }) => {
+const DataField: React.FC<DataFieldProps> = ({ label, value, fieldName }) => {
   if (!value) return null;
+  const unit = getFieldUnit(fieldName);
   return (
     <Box>
       <Text fontSize="sm" color="fg.muted" mb="1">
         {label}
       </Text>
       <Text fontSize="md" fontWeight="medium">
-        {value}
+        {formatDisplayValue(value, fieldName)}
+        {unit && (
+          <Text as="span" color="fg.muted" ml="1">
+            {unit}
+          </Text>
+        )}
       </Text>
     </Box>
   );

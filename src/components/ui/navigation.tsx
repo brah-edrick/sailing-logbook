@@ -16,6 +16,9 @@ export function Navigation() {
       px="6"
       mb="8"
       mx="-6"
+      position="sticky"
+      top="0"
+      zIndex="10"
     >
       <Flex alignItems="center" gap="2" justifyContent="space-between">
         <Heading size="xl">⛵ Sailing Log</Heading>

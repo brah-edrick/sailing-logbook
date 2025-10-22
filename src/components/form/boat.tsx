@@ -15,7 +15,7 @@ export function EditBoatForm({ boat }: { boat: ApiBoat }) {
     type: boat.type as BoatType | null,
     make: boat.make,
     model: boat.model || "",
-    year: boat.year?.toString() || undefined,
+    year: boat.year?.toString() || "",
     lengthFt: boat.lengthFt.toString(),
     beamFt: boat.beamFt?.toString() || "",
     sailNumber: boat.sailNumber || "",

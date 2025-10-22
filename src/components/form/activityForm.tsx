@@ -352,15 +352,18 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               />
             </FormField>
 
-            <FormField label="Distance (NM)" error={errors.distanceNm?.message}>
+            <FormField label="Distance" error={errors.distanceNm?.message}>
               <NumberInput.Root
                 value={watch("distanceNm") || ""}
                 onValueChange={(details) =>
                   setValue("distanceNm", details.value.toString())
                 }
-                step={0.1}
+                step={1}
                 min={0}
                 width="100%"
+                formatOptions={{
+                  style: "decimal",
+                }}
               >
                 <NumberInput.Control>
                   <NumberInput.IncrementTrigger />
@@ -375,7 +378,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             </FormField>
 
             <FormField
-              label="Average Speed (knots)"
+              label="Average Speed"
               error={errors.avgSpeedKnots?.message}
             >
               <NumberInput.Root
@@ -383,9 +386,12 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                 onValueChange={(details) =>
                   setValue("avgSpeedKnots", details.value.toString())
                 }
-                step={0.1}
+                step={1}
                 min={0}
                 width="100%"
+                formatOptions={{
+                  style: "decimal",
+                }}
               >
                 <NumberInput.Control>
                   <NumberInput.IncrementTrigger />
@@ -475,7 +481,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             </FormField>
 
             <FormField
-              label="Wind Speed (knots)"
+              label="Wind Speed"
               error={errors.windSpeedKnots?.message}
             >
               <NumberInput.Root
@@ -483,9 +489,12 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
                 onValueChange={(details) =>
                   setValue("windSpeedKnots", details.value.toString())
                 }
-                step={0.1}
+                step={1}
                 min={0}
                 width="100%"
+                formatOptions={{
+                  style: "decimal",
+                }}
               >
                 <NumberInput.Control>
                   <NumberInput.IncrementTrigger />
@@ -627,16 +636,14 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
         <Flex
           justifyContent={{ base: "stretch", sm: "flex-end" }}
           gap="4"
-          pt="4"
-          borderTop="1px solid"
-          borderColor="border.subtle"
+          pt="1"
         >
           <Button
             type="submit"
-            size="lg"
-            colorScheme="blue"
+            variant="surface"
+            colorPalette={isValid ? "green" : "gray"}
             loading={isLoading}
-            disabled={!isValid || !isDirty}
+            disabled={!isValid}
             w={{ base: "full", sm: "auto" }}
             minW="140px"
           >

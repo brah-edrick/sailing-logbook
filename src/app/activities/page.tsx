@@ -9,7 +9,12 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { ApiSailingActivityWithBoat } from "@/types/api";
-import { formatDate, calculateDuration } from "@/utils/date";
+import {
+  formatDate,
+  calculateDuration,
+  formatDisplayValue,
+  getFieldUnit,
+} from "@/utils/date";
 
 export default async function ActivitiesPage() {
   const response = await fetch(
@@ -72,7 +77,7 @@ export default async function ActivitiesPage() {
                 <Table.ColumnHeader>Boat</Table.ColumnHeader>
                 <Table.ColumnHeader>Duration</Table.ColumnHeader>
                 <Table.ColumnHeader>Purpose</Table.ColumnHeader>
-                <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
+                <Table.ColumnHeader>Distance</Table.ColumnHeader>
                 <Table.ColumnHeader></Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
@@ -110,7 +115,11 @@ export default async function ActivitiesPage() {
                     </Text>
                   </Table.Cell>
                   <Table.Cell>
-                    <Text>{activity.distanceNm || "-"}</Text>
+                    <Text>
+                      {activity.distanceNm
+                        ? `${formatDisplayValue(activity.distanceNm.toString(), "distanceNm")} ${getFieldUnit("distanceNm")}`
+                        : "-"}
+                    </Text>
                   </Table.Cell>
 
                   <Table.Cell>
