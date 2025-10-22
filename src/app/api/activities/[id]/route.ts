@@ -1,6 +1,6 @@
 // app/api/activities/[id]/route.ts
 import { prisma } from "@/lib/prisma";
-import { activitySchema } from "@/validation/activities";
+import { activityApiSchema } from "@/validation/schemas";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -26,7 +26,7 @@ export async function PUT(
   const data = await req.json();
   const { id } = await params;
 
-  const validatedData = activitySchema.parse(data);
+  const validatedData = activityApiSchema.parse(data);
 
   const updated = await prisma.sailingActivity.update({
     where: { id: Number(id) },

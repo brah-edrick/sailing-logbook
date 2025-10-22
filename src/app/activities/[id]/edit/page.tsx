@@ -1,4 +1,4 @@
-import { Heading, Text, Link } from "@chakra-ui/react";
+import { Text, Link } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
 import { EditActivityForm } from "@/components/form/activity";
 
@@ -48,11 +48,14 @@ export default async function EditActivityPage({
   return (
     <main>
       <Link href={`/activities/${activity.id}`}>
-        <Text>Back to Activity</Text>
+        <Text
+          color="blue.500"
+          fontSize="sm"
+          _hover={{ textDecoration: "underline" }}
+        >
+          ← Back to Activity
+        </Text>
       </Link>
-      <Heading size="3xl" mb="6">
-        Edit Activity
-      </Heading>
       <EditActivityForm activity={activity} boats={boats} />
     </main>
   );

@@ -1,4 +1,4 @@
-import { Heading, Text, Link } from "@chakra-ui/react";
+import { Text, Link } from "@chakra-ui/react";
 import { NewActivityForm } from "@/components/form/activity";
 
 export default async function NewActivityPage({
@@ -24,11 +24,14 @@ export default async function NewActivityPage({
   return (
     <main>
       <Link href="/activities">
-        <Text>Back to Activities</Text>
+        <Text
+          color="blue.500"
+          fontSize="sm"
+          _hover={{ textDecoration: "underline" }}
+        >
+          ← Back to Activities
+        </Text>
       </Link>
-      <Heading size="3xl" mb="6">
-        Add New Activity
-      </Heading>
       <NewActivityForm boats={boats} boatIdFromParams={boatIdFromParams} />
     </main>
   );

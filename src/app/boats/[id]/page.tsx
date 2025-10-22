@@ -1,21 +1,18 @@
 import {
   Box,
   Button,
-  Card,
-  DataList,
   Flex,
-  Heading,
   Stack,
   Text,
-  Center,
-  SimpleGrid,
-  GridItem,
+  Grid,
   Table,
+  Tabs,
 } from "@chakra-ui/react";
+import { LuCalendar, LuShip } from "react-icons/lu";
 import Link from "next/link";
 import { calculateDuration, formatDate } from "@/utils/date";
 import { notFound } from "next/navigation";
-import { SafeDeleteEntityButton } from "@/components/ui/safe-delete-entity-button";
+import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
 import { ApiBoat, ApiSailingActivity } from "@/types/api";
 
 export default async function BoatDetailPage({
@@ -62,171 +59,336 @@ export default async function BoatDetailPage({
   ]);
 
   return (
-    <main>
-      <div>
-        <Link href="/boats">
-          <Text>Back to Boats</Text>
-        </Link>
-      </div>
-      <div>
-        <header>
-          <Flex justifyContent="space-between" py="4">
-            <Heading size="3xl">
-              <Flex alignItems="baseline" gap="1">
-                <Text>{boat.name}</Text>
-                <Box
-                  style={{ backgroundColor: boat.colorHex || "#FFFFFF" }}
-                  borderRadius="full"
-                  boxSize="24px"
-                  ml="2"
-                />
-              </Flex>
-            </Heading>
-            <Stack direction="row" gap="2">
-              <Link href={`/activities/new?boatId=${boat.id}`}>
-                <Button variant="surface">+ Add New Activity</Button>
-              </Link>
-              <Button variant="surface" asChild>
-                <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
-              </Button>
-              <SafeDeleteEntityButton
-                entityId={boat.id}
-                entityName={boat.name}
-                entityType="boat"
+    <Stack direction="column" gap={{ base: "6", md: "8" }}>
+      {/* Header Section */}
+      <Box>
+        <Flex justifyContent="space-between" alignItems="flex-start" mb="4">
+          <Box>
+            <Flex alignItems="baseline" gap="2" mb="2">
+              <Box
+                as="h1"
+                fontSize={{ base: "2xl", md: "3xl" }}
+                fontWeight="bold"
+              >
+                {boat.name}
+              </Box>
+              <Box
+                style={{ backgroundColor: boat.colorHex || "#FFFFFF" }}
+                borderRadius="full"
+                boxSize="24px"
               />
-            </Stack>
-          </Flex>
-        </header>
-        <SimpleGrid columns={3} gap={4}>
-          <Card.Root>
-            <Card.Header>
-              <Text>Details</Text>
-            </Card.Header>
-            <Card.Body>
-              <DataList.Root orientation="horizontal">
-                <DataListItemComponent label="Type" value={boat.type} />
-                <DataListItemComponent label="Make" value={boat.make} />
-                <DataListItemComponent label="Model" value={boat.model} />
-                <DataListItemComponent
-                  label="Year"
-                  value={boat.year?.toString()}
-                />
-                <DataListItemComponent
+            </Flex>
+            <Box color="fg.muted" fontSize="sm">
+              View your boat details and sailing activities
+            </Box>
+          </Box>
+          <Stack direction="row" gap="2">
+            <Link href={`/activities/new?boatId=${boat.id}`}>
+              <Button variant="surface" colorPalette="green">
+                + Add New Activity
+              </Button>
+            </Link>
+            <Button variant="surface" colorPalette="orange" asChild>
+              <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
+            </Button>
+            <SafeDeleteEntityButton
+              entityId={boat.id}
+              entityName={boat.name}
+              entityType="boat"
+            />
+          </Stack>
+        </Flex>
+        <Link href="/boats">
+          <Text
+            color="blue.500"
+            fontSize="sm"
+            _hover={{ textDecoration: "underline" }}
+          >
+            ← Back to Boats
+          </Text>
+        </Link>
+      </Box>
+
+      {/* Tabs Section */}
+      <Tabs.Root defaultValue="activities" variant="enclosed">
+        <Tabs.List>
+          <Tabs.Trigger value="activities">
+            <Flex alignItems="center" gap="2">
+              <LuCalendar size="16" />
+              Activities
+            </Flex>
+          </Tabs.Trigger>
+          <Tabs.Trigger value="details">
+            <Flex alignItems="center" gap="2">
+              <LuShip size="16" />
+              Boat Details
+            </Flex>
+          </Tabs.Trigger>
+        </Tabs.List>
+
+        <Tabs.Content value="activities">
+          <Box
+            bg="bg.muted"
+            borderRadius="xl"
+            border="1px solid"
+            borderColor="border.subtle"
+            p={{ base: "6", md: "8" }}
+            shadow="sm"
+            mt="4"
+          >
+            <Box mb="6">
+              <Flex
+                justifyContent="space-between"
+                alignItems="flex-start"
+                mb="2"
+              >
+                <Box>
+                  <Box
+                    as="h2"
+                    fontSize="xl"
+                    fontWeight="semibold"
+                    mb="2"
+                    color="fg.emphasized"
+                  >
+                    Sailing Activities
+                  </Box>
+                  <Box color="fg.muted" fontSize="sm">
+                    Track your sailing adventures with this boat
+                  </Box>
+                </Box>
+                <Link href={`/activities/new?boatId=${boat.id}`}>
+                  <Button variant="surface" size="sm" colorPalette="green">
+                    + Add New Activity
+                  </Button>
+                </Link>
+              </Flex>
+            </Box>
+
+            {activities.length === 0 ? (
+              <Box textAlign="center" py="8">
+                <Text fontSize="lg" color="fg.muted" mb="4">
+                  No activities found.
+                </Text>
+                <Link href={`/activities/new?boatId=${boat.id}`}>
+                  <Button variant="surface" colorPalette="green">
+                    Create your first activity!
+                  </Button>
+                </Link>
+              </Box>
+            ) : (
+              <Table.Root>
+                <Table.Header>
+                  <Table.Row bg="transparent">
+                    <Table.ColumnHeader>Date</Table.ColumnHeader>
+                    <Table.ColumnHeader>Duration</Table.ColumnHeader>
+                    <Table.ColumnHeader>Purpose</Table.ColumnHeader>
+                    <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
+                    <Table.ColumnHeader></Table.ColumnHeader>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {activities.map((activity: ApiSailingActivity) => (
+                    <Table.Row key={activity.id} bg="transparent">
+                      <Table.Cell>
+                        <Text>{formatDate(activity.startTime)}</Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text>
+                          {calculateDuration(
+                            activity.startTime,
+                            activity.endTime
+                          )}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text>
+                          {activity.purpose
+                            ? activity.purpose.charAt(0).toUpperCase() +
+                              activity.purpose.slice(1)
+                            : "-"}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text>{activity.distanceNm || "-"}</Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Flex gap="2" justifyContent="end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            colorPalette="orange"
+                            asChild
+                          >
+                            <Link href={`/activities/${activity.id}/edit`}>
+                              Edit
+                            </Link>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="surface"
+                            colorPalette="blue"
+                            asChild
+                          >
+                            <Link href={`/activities/${activity.id}`}>
+                              View
+                            </Link>
+                          </Button>
+                        </Flex>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Root>
+            )}
+          </Box>
+        </Tabs.Content>
+
+        <Tabs.Content value="details">
+          <Stack direction="column" gap={{ base: "6", md: "8" }} mt="4">
+            {/* Essential Information */}
+            <Box
+              bg="bg.muted"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="border.subtle"
+              p={{ base: "6", md: "8" }}
+              shadow="sm"
+            >
+              <Box mb="6">
+                <Box
+                  as="h2"
+                  fontSize="xl"
+                  fontWeight="semibold"
+                  mb="2"
+                  color="fg.emphasized"
+                >
+                  Essential Information
+                </Box>
+                <Box color="fg.muted" fontSize="sm">
+                  Basic details required to identify your boat
+                </Box>
+              </Box>
+
+              <Grid
+                templateColumns={{
+                  base: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(3, 1fr)",
+                }}
+                gap={{ base: "4", md: "6" }}
+              >
+                <DataField label="Boat Name" value={boat.name} />
+                <DataField label="Make" value={boat.make} />
+                <DataField label="Model" value={boat.model} />
+                <DataField label="Type" value={boat.type} />
+                <DataField label="Year" value={boat.year?.toString()} />
+                <DataField label="Sail Number" value={boat.sailNumber} />
+              </Grid>
+            </Box>
+
+            {/* Dimensions & Specifications */}
+            <Box
+              bg="bg.muted"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="border.subtle"
+              p={{ base: "6", md: "8" }}
+              shadow="sm"
+            >
+              <Box mb="6">
+                <Box
+                  as="h2"
+                  fontSize="xl"
+                  fontWeight="semibold"
+                  mb="2"
+                  color="fg.emphasized"
+                >
+                  Dimensions & Specifications
+                </Box>
+                <Box color="fg.muted" fontSize="sm">
+                  Physical measurements and technical details
+                </Box>
+              </Box>
+
+              <Grid
+                templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+                gap={{ base: "4", md: "6" }}
+              >
+                <DataField
                   label="Length (ft)"
                   value={boat.lengthFt?.toString()}
                 />
-                <DataListItemComponent
-                  label="Beam (ft)"
-                  value={boat.beamFt?.toString()}
-                />
-                <DataListItemComponent
-                  label="Sail Number"
-                  value={boat.sailNumber}
-                />
-                <DataListItemComponent
-                  label="Home Port"
-                  value={boat.homePort}
-                />
-                <DataListItemComponent label="Owner" value={boat.owner} />
-                <DataListItemComponent label="Notes" value={boat.notes} />
-              </DataList.Root>
-            </Card.Body>
-          </Card.Root>
-          <GridItem colSpan={2}>
-            <Card.Root>
-              <Card.Header>
-                <Text>Activities</Text>
-              </Card.Header>
-              <Card.Body>
-                {activities.length === 0 ? (
-                  <Center>
-                    <Text fontSize="lg">
-                      No activities found.{" "}
-                      <Link href={`/activities/new?boatId=${boat.id}`}>
-                        Create your first activity!
-                      </Link>
+                <DataField label="Beam (ft)" value={boat.beamFt?.toString()} />
+              </Grid>
+            </Box>
+
+            {/* Additional Details */}
+            <Box
+              bg="bg.muted"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="border.subtle"
+              p={{ base: "6", md: "8" }}
+              shadow="sm"
+            >
+              <Box mb="6">
+                <Box
+                  as="h2"
+                  fontSize="xl"
+                  fontWeight="semibold"
+                  mb="2"
+                  color="fg.emphasized"
+                >
+                  Additional Details
+                </Box>
+                <Box color="fg.muted" fontSize="sm">
+                  Optional information to complete your boat profile
+                </Box>
+              </Box>
+
+              <Stack gap={{ base: "4", md: "6" }}>
+                <Grid
+                  templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+                  gap={{ base: "4", md: "6" }}
+                >
+                  <DataField label="Home Port" value={boat.homePort} />
+                  <DataField label="Owner" value={boat.owner} />
+                </Grid>
+
+                {boat.notes && (
+                  <Box>
+                    <Text fontSize="sm" color="fg.muted" mb="2">
+                      Notes
                     </Text>
-                  </Center>
-                ) : (
-                  <Table.Root>
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.ColumnHeader>Date</Table.ColumnHeader>
-                        <Table.ColumnHeader>Duration</Table.ColumnHeader>
-                        <Table.ColumnHeader>Purpose</Table.ColumnHeader>
-                        <Table.ColumnHeader>Distance (NM)</Table.ColumnHeader>
-
-                        <Table.ColumnHeader></Table.ColumnHeader>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {activities.map((activity: ApiSailingActivity) => (
-                        <Table.Row key={activity.id}>
-                          <Table.Cell>
-                            <Text>{formatDate(activity.startTime)}</Text>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Text>
-                              {calculateDuration(
-                                activity.startTime,
-                                activity.endTime
-                              )}
-                            </Text>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Text>
-                              {activity.purpose
-                                ? activity.purpose.charAt(0).toUpperCase() +
-                                  activity.purpose.slice(1)
-                                : "-"}
-                            </Text>
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Text>{activity.distanceNm || "-"}</Text>
-                          </Table.Cell>
-
-                          <Table.Cell>
-                            <Flex gap="2" justifyContent="end">
-                              <Button size="sm" variant="outline" asChild>
-                                <Link href={`/activities/${activity.id}/edit`}>
-                                  Edit
-                                </Link>
-                              </Button>
-                              <Button size="sm" variant="surface" asChild>
-                                <Link href={`/activities/${activity.id}`}>
-                                  View
-                                </Link>
-                              </Button>
-                            </Flex>
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    </Table.Body>
-                  </Table.Root>
+                    <Text fontSize="md" lineHeight="1.6">
+                      {boat.notes}
+                    </Text>
+                  </Box>
                 )}
-              </Card.Body>
-            </Card.Root>
-          </GridItem>
-        </SimpleGrid>
-      </div>
-    </main>
+              </Stack>
+            </Box>
+          </Stack>
+        </Tabs.Content>
+      </Tabs.Root>
+    </Stack>
   );
 }
 
-interface DataListItemProps {
+interface DataFieldProps {
   label: string;
   value: string | undefined | null;
 }
 
-const DataListItemComponent: React.FC<DataListItemProps> = ({
-  label,
-  value,
-}) => {
+const DataField: React.FC<DataFieldProps> = ({ label, value }) => {
   if (!value) return null;
   return (
-    <DataList.Item>
-      <DataList.ItemLabel>{label}</DataList.ItemLabel>
-      <DataList.ItemValue>{value}</DataList.ItemValue>
-    </DataList.Item>
+    <Box>
+      <Text fontSize="sm" color="fg.muted" mb="1">
+        {label}
+      </Text>
+      <Text fontSize="md" fontWeight="medium">
+        {value}
+      </Text>
+    </Box>
   );
 };

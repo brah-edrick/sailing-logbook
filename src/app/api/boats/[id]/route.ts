@@ -1,6 +1,6 @@
 // app/api/boats/[id]/route.ts
 import { prisma } from "@/lib/prisma";
-import { boatSchema } from "@/validation/boat";
+import { boatApiSchema } from "@/validation/schemas";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -90,7 +90,7 @@ export async function PUT(
       return NextResponse.json({ error: "Invalid boat ID" }, { status: 400 });
     }
 
-    const validatedData = boatSchema.parse(data);
+    const validatedData = boatApiSchema.parse(data);
 
     const boat = await prisma.boat.update({
       where: { id: numericId },
