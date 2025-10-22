@@ -1,4 +1,4 @@
-import { Heading, Text, Link } from "@chakra-ui/react";
+import { Text, Link } from "@chakra-ui/react";
 import { notFound } from "next/navigation";
 import { EditBoatForm } from "@/components/form/boat";
 
@@ -33,11 +33,14 @@ export default async function EditBoatPage({
   return (
     <main>
       <Link href={`/boats/${boat.id}`}>
-        <Text>Back to {boat.name}</Text>
+        <Text
+          color="blue.500"
+          fontSize="sm"
+          _hover={{ textDecoration: "underline" }}
+        >
+          ← Back to {boat.name}
+        </Text>
       </Link>
-      <Heading size="3xl" mb="6">
-        Edit {boat.name}
-      </Heading>
       <EditBoatForm boat={boat} />
     </main>
   );

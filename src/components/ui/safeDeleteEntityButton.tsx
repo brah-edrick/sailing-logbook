@@ -58,7 +58,7 @@ export function SafeDeleteEntityButton({
   };
 
   const deleteButton = (
-    <Button variant="surface" color="red.500">
+    <Button variant="surface" colorPalette="red">
       Delete
     </Button>
   );
@@ -66,7 +66,7 @@ export function SafeDeleteEntityButton({
   // If confirmation is not required, return a simple button
   if (!requireConfirmation) {
     return (
-      <Button variant="surface" color="red.500" onClick={handleDelete}>
+      <Button variant="surface" colorPalette="red" onClick={handleDelete}>
         Delete
       </Button>
     );
@@ -97,7 +97,7 @@ export function SafeDeleteEntityButton({
                 <Button
                   onClick={handleDelete}
                   variant="surface"
-                  color="red.500"
+                  colorPalette="red"
                 >
                   Confirm Delete {entityName}
                 </Button>
