@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { ApiBoat } from "@/types/api";
 import { formatDisplayValue, getFieldUnit } from "@/utils/date";
+import { Card } from "@/components/ui/Card";
 
 export default async function BoatsPage() {
   const response = await fetch(
@@ -26,7 +27,7 @@ export default async function BoatsPage() {
   const boats = (await response.json()) as ApiBoat[];
 
   return (
-    <Stack direction="column" gap={{ base: "6", md: "8" }}>
+    <Stack direction="column" gap="4" mt="4">
       {/* Header Section */}
       <Box>
         <Flex justifyContent="space-between" gap="4" mb="4">
@@ -45,14 +46,7 @@ export default async function BoatsPage() {
       </Box>
 
       {/* Boats Card */}
-      <Box
-        bg="bg.muted"
-        borderRadius="xl"
-        border="1px solid"
-        borderColor="border.subtle"
-        p={{ base: "6", md: "8" }}
-        shadow="sm"
-      >
+      <Card>
         {boats.length === 0 ? (
           <Box textAlign="center" py="8">
             <Text fontSize="lg" color="fg.muted" mb="4">
@@ -130,7 +124,7 @@ export default async function BoatsPage() {
             </Table.Body>
           </Table.Root>
         )}
-      </Box>
+      </Card>
     </Stack>
   );
 }

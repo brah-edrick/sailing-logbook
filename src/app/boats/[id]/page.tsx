@@ -20,6 +20,7 @@ import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
 import { ApiBoat, ApiSailingActivity, ApiBoatReport } from "@/types/api";
 import { BoatSummaryCard } from "@/components/ui/BoatSummaryCard";
+import { Card } from "@/components/ui/Card";
 
 export default async function BoatDetailPage({
   params,
@@ -76,7 +77,7 @@ export default async function BoatDetailPage({
   ]);
 
   return (
-    <Stack direction="column" gap="4">
+    <Stack direction="column" gap="4" mt="4">
       {/* Header Section */}
       <Box>
         <Flex justifyContent="space-between" alignItems="flex-start" mb="4">
@@ -144,139 +145,127 @@ export default async function BoatDetailPage({
         </Tabs.List>
 
         <Tabs.Content value="activities">
-          {/* Boat Summary Card */}
-          <BoatSummaryCard report={report} />
+          <Stack direction="column" gap="4" mt="4">
+            {/* Boat Summary Card */}
+            <BoatSummaryCard report={report} />
 
-          <Box
-            bg="bg.subtle"
-            borderRadius="lg"
-            border="1px solid"
-            borderColor="border.subtle"
-            p={{ base: "6", md: "8" }}
-            mt="4"
-          >
-            <Box mb="6">
-              <Flex
-                justifyContent="space-between"
-                alignItems="flex-start"
-                mb="2"
-              >
-                <Box>
-                  <Box
-                    as="h2"
-                    fontSize="xl"
-                    fontWeight="semibold"
-                    mb="2"
-                    color="fg.emphasized"
-                  >
-                    Sailing Activities
+            <Card>
+              <Box mb="6">
+                <Flex
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  mb="2"
+                >
+                  <Box>
+                    <Box
+                      as="h2"
+                      fontSize="xl"
+                      fontWeight="semibold"
+                      mb="2"
+                      color="fg.emphasized"
+                    >
+                      Sailing Activities
+                    </Box>
+                    <Box color="fg.muted" fontSize="sm">
+                      Track your sailing adventures with this boat
+                    </Box>
                   </Box>
-                  <Box color="fg.muted" fontSize="sm">
-                    Track your sailing adventures with this boat
-                  </Box>
-                </Box>
-                <Link href={`/activities/new?boatId=${boat.id}`}>
-                  <Button variant="surface" size="sm" colorPalette="green">
-                    + Add New Activity
-                  </Button>
-                </Link>
-              </Flex>
-            </Box>
-
-            {activities.length === 0 ? (
-              <Box textAlign="center" py="8">
-                <Text fontSize="lg" color="fg.muted" mb="4">
-                  No activities found.
-                </Text>
-                <Link href={`/activities/new?boatId=${boat.id}`}>
-                  <Button variant="surface" colorPalette="green">
-                    Create your first activity!
-                  </Button>
-                </Link>
+                  <Link href={`/activities/new?boatId=${boat.id}`}>
+                    <Button variant="surface" size="sm" colorPalette="green">
+                      + Add New Activity
+                    </Button>
+                  </Link>
+                </Flex>
               </Box>
-            ) : (
-              <Table.Root>
-                <Table.Header>
-                  <Table.Row bg="transparent">
-                    <Table.ColumnHeader>Date</Table.ColumnHeader>
-                    <Table.ColumnHeader>Duration</Table.ColumnHeader>
-                    <Table.ColumnHeader>Purpose</Table.ColumnHeader>
-                    <Table.ColumnHeader>Distance</Table.ColumnHeader>
-                    <Table.ColumnHeader></Table.ColumnHeader>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {activities.map((activity: ApiSailingActivity) => (
-                    <Table.Row key={activity.id} bg="transparent">
-                      <Table.Cell>
-                        <Text>{formatDate(activity.startTime)}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text>
-                          {calculateDuration(
-                            activity.startTime,
-                            activity.endTime
-                          )}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text>
-                          {activity.purpose
-                            ? activity.purpose.charAt(0).toUpperCase() +
-                              activity.purpose.slice(1)
-                            : "-"}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text>
-                          {activity.distanceNm
-                            ? `${formatDisplayValue(activity.distanceNm.toString(), "distanceNm")} ${getFieldUnit("distanceNm")}`
-                            : "-"}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Flex gap="2" justifyContent="end">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            colorPalette="orange"
-                            asChild
-                          >
-                            <Link href={`/activities/${activity.id}/edit`}>
-                              Edit
-                            </Link>
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="surface"
-                            colorPalette="blue"
-                            asChild
-                          >
-                            <Link href={`/activities/${activity.id}`}>
-                              View
-                            </Link>
-                          </Button>
-                        </Flex>
-                      </Table.Cell>
+
+              {activities.length === 0 ? (
+                <Box textAlign="center" py="8">
+                  <Text fontSize="lg" color="fg.muted" mb="4">
+                    No activities found.
+                  </Text>
+                  <Link href={`/activities/new?boatId=${boat.id}`}>
+                    <Button variant="surface" colorPalette="green">
+                      Create your first activity!
+                    </Button>
+                  </Link>
+                </Box>
+              ) : (
+                <Table.Root>
+                  <Table.Header>
+                    <Table.Row bg="transparent">
+                      <Table.ColumnHeader>Date</Table.ColumnHeader>
+                      <Table.ColumnHeader>Duration</Table.ColumnHeader>
+                      <Table.ColumnHeader>Purpose</Table.ColumnHeader>
+                      <Table.ColumnHeader>Distance</Table.ColumnHeader>
+                      <Table.ColumnHeader></Table.ColumnHeader>
                     </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Root>
-            )}
-          </Box>
+                  </Table.Header>
+                  <Table.Body>
+                    {activities.map((activity: ApiSailingActivity) => (
+                      <Table.Row key={activity.id} bg="transparent">
+                        <Table.Cell>
+                          <Text>{formatDate(activity.startTime)}</Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text>
+                            {calculateDuration(
+                              activity.startTime,
+                              activity.endTime
+                            )}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text>
+                            {activity.purpose
+                              ? activity.purpose.charAt(0).toUpperCase() +
+                                activity.purpose.slice(1)
+                              : "-"}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text>
+                            {activity.distanceNm
+                              ? `${formatDisplayValue(activity.distanceNm.toString(), "distanceNm")} ${getFieldUnit("distanceNm")}`
+                              : "-"}
+                          </Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Flex gap="2" justifyContent="end">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              colorPalette="orange"
+                              asChild
+                            >
+                              <Link href={`/activities/${activity.id}/edit`}>
+                                Edit
+                              </Link>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="surface"
+                              colorPalette="blue"
+                              asChild
+                            >
+                              <Link href={`/activities/${activity.id}`}>
+                                View
+                              </Link>
+                            </Button>
+                          </Flex>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              )}
+            </Card>
+          </Stack>
         </Tabs.Content>
 
         <Tabs.Content value="details">
-          <Stack direction="column" gap={{ base: "6", md: "8" }} mt="4">
+          <Stack direction="column" gap="4" mt="4">
             {/* Essential Information */}
-            <Box
-              bg="bg.muted"
-              borderRadius="xl"
-              border="1px solid"
-              borderColor="border.subtle"
-              p={{ base: "6", md: "8" }}
-              shadow="sm"
-            >
+            <Card>
               <Box mb="6">
                 <Box
                   as="h2"
@@ -307,17 +296,10 @@ export default async function BoatDetailPage({
                 <DataField label="Year" value={boat.year?.toString()} />
                 <DataField label="Sail Number" value={boat.sailNumber} />
               </Grid>
-            </Box>
+            </Card>
 
             {/* Dimensions & Specifications */}
-            <Box
-              bg="bg.muted"
-              borderRadius="xl"
-              border="1px solid"
-              borderColor="border.subtle"
-              p={{ base: "6", md: "8" }}
-              shadow="sm"
-            >
+            <Card>
               <Box mb="6">
                 <Box
                   as="h2"
@@ -348,17 +330,10 @@ export default async function BoatDetailPage({
                   fieldName="beamFt"
                 />
               </Grid>
-            </Box>
+            </Card>
 
             {/* Additional Details */}
-            <Box
-              bg="bg.muted"
-              borderRadius="xl"
-              border="1px solid"
-              borderColor="border.subtle"
-              p={{ base: "6", md: "8" }}
-              shadow="sm"
-            >
+            <Card>
               <Box mb="6">
                 <Box
                   as="h2"
@@ -394,7 +369,7 @@ export default async function BoatDetailPage({
                   </Box>
                 )}
               </Stack>
-            </Box>
+            </Card>
           </Stack>
         </Tabs.Content>
       </Tabs.Root>

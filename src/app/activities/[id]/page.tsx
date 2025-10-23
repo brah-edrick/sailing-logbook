@@ -1,4 +1,5 @@
 import { Button, Box, Flex, Stack, Text, Grid } from "@chakra-ui/react";
+import { Card } from "@/components/ui/Card";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
@@ -65,7 +66,7 @@ export default async function ActivityDetailPage({
   const activity = (await response.json()) as ApiSailingActivity;
 
   return (
-    <Stack direction="column" gap={{ base: "6", md: "8" }}>
+    <Stack direction="column" gap="4" mt="4">
       {/* Header Section */}
       <Box>
         <Flex justifyContent="space-between" alignItems="flex-start" mb="4">
@@ -105,14 +106,7 @@ export default async function ActivityDetailPage({
       </Box>
 
       {/* Basic Information */}
-      <Box
-        bg="bg.muted"
-        borderRadius="xl"
-        border="1px solid"
-        borderColor="border.subtle"
-        p={{ base: "6", md: "8" }}
-        shadow="sm"
-      >
+      <Card>
         <Box mb="6">
           <Box
             as="h2"
@@ -147,17 +141,10 @@ export default async function ActivityDetailPage({
             value={calculateDuration(activity.startTime, activity.endTime)}
           />
         </Grid>
-      </Box>
+      </Card>
 
       {/* Location & Navigation */}
-      <Box
-        bg="bg.muted"
-        borderRadius="xl"
-        border="1px solid"
-        borderColor="border.subtle"
-        p={{ base: "6", md: "8" }}
-        shadow="sm"
-      >
+      <Card>
         <Box mb="6">
           <Box
             as="h2"
@@ -193,17 +180,10 @@ export default async function ActivityDetailPage({
             fieldName="avgSpeedKnots"
           />
         </Grid>
-      </Box>
+      </Card>
 
       {/* Weather & Conditions */}
-      <Box
-        bg="bg.muted"
-        borderRadius="xl"
-        border="1px solid"
-        borderColor="border.subtle"
-        p={{ base: "6", md: "8" }}
-        shadow="sm"
-      >
+      <Card>
         <Box mb="6">
           <Box
             as="h2"
@@ -244,18 +224,11 @@ export default async function ActivityDetailPage({
             value={activity.sailConfiguration}
           />
         </Grid>
-      </Box>
+      </Card>
 
       {/* Additional Notes */}
       {activity.notes && (
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -280,7 +253,7 @@ export default async function ActivityDetailPage({
               {activity.notes}
             </Text>
           </Box>
-        </Box>
+        </Card>
       )}
     </Stack>
   );

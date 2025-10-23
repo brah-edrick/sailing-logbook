@@ -12,37 +12,42 @@ export function Navigation() {
       borderBottom="1px solid"
       borderColor="border.subtle"
       bg="bg.muted"
-      borderRadius="xl"
+      borderRadius="md"
       px="6"
       mb="8"
-      mx="-6"
+      mx="-50vw"
       position="sticky"
       top="0"
       zIndex="10"
+      shadow="xs"
     >
-      <Flex alignItems="center" gap="2" justifyContent="space-between">
-        <Heading size="xl">⛵ Sailing Log</Heading>
-        <Stack direction="row" gap="4">
-          <Link
-            href="/boats"
-            color={pathname.startsWith("/boats") ? "blue.500" : "fg.muted"}
-            fontWeight={pathname.startsWith("/boats") ? "semibold" : "normal"}
-            _hover={{ color: "blue.500" }}
-          >
-            Boats
-          </Link>
-          <Link
-            href="/activities"
-            color={pathname.startsWith("/activities") ? "blue.500" : "fg.muted"}
-            fontWeight={
-              pathname.startsWith("/activities") ? "semibold" : "normal"
-            }
-            _hover={{ color: "blue.500" }}
-          >
-            Activities
-          </Link>
-        </Stack>
-      </Flex>
+      <Box maxW="4xl" mx="auto" px="8">
+        <Flex alignItems="center" gap="2" justifyContent="space-between">
+          <Heading size="xl">⛵ Sailing Log</Heading>
+          <Stack direction="row" gap="4">
+            <Link
+              href="/boats"
+              color={pathname.startsWith("/boats") ? "blue.500" : "fg.muted"}
+              fontWeight={pathname.startsWith("/boats") ? "semibold" : "normal"}
+              _hover={{ color: "blue.500" }}
+            >
+              Boats
+            </Link>
+            <Link
+              href="/activities"
+              color={
+                pathname.startsWith("/activities") ? "blue.500" : "fg.muted"
+              }
+              fontWeight={
+                pathname.startsWith("/activities") ? "semibold" : "normal"
+              }
+              _hover={{ color: "blue.500" }}
+            >
+              Activities
+            </Link>
+          </Stack>
+        </Flex>
+      </Box>
     </Box>
   );
 }
