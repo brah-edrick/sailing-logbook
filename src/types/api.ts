@@ -39,3 +39,28 @@ export interface ApiSailingActivity {
 export interface ApiSailingActivityWithBoat extends ApiSailingActivity {
   boat: ApiBoat;
 }
+
+// Report types
+export interface ReportMetrics {
+  hoursSailed: number;
+  nauticalMiles: number;
+  eventCount: number;
+}
+
+// General activities report (all activities)
+export interface ApiActivitiesReport {
+  total: ReportMetrics;
+  byBoatType: Record<string, ReportMetrics>;
+  byActivityType: Record<string, ReportMetrics>;
+  byBoatLength: Record<string, ReportMetrics>;
+}
+
+// Boat-specific report (activities for a single boat)
+export interface ApiBoatReport {
+  boatId: number;
+  boatName: string;
+  total: ReportMetrics;
+  byActivityType: Record<string, ReportMetrics>;
+  byMonth: Record<string, ReportMetrics>;
+  byYear: Record<string, ReportMetrics>;
+}
