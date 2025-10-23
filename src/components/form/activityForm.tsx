@@ -14,6 +14,7 @@ import {
   Portal,
   NumberInput,
 } from "@chakra-ui/react";
+import { Card } from "@/components/ui/Card";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -153,7 +154,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <Stack direction="column" gap={{ base: "6", md: "8" }}>
+      <Stack direction="column" gap="4" mt="4">
         {/* Header Section */}
         <Box>
           <Box
@@ -174,14 +175,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
         </Box>
 
         {/* Basic Information */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -294,17 +288,10 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               />
             </FormField>
           </Grid>
-        </Box>
+        </Card>
 
         {/* Location & Navigation */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -403,17 +390,10 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               </NumberInput.Root>
             </FormField>
           </Grid>
-        </Box>
+        </Card>
 
         {/* Weather & Conditions */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -590,17 +570,10 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               />
             </FormField>
           </Grid>
-        </Box>
+        </Card>
 
         {/* Additional Notes */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -628,7 +601,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               resize="vertical"
             />
           </FormField>
-        </Box>
+        </Card>
 
         {/* Action Buttons */}
         <Flex

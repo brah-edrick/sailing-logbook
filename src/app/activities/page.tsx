@@ -16,6 +16,7 @@ import {
   getFieldUnit,
 } from "@/utils/date";
 import { ActivitiesSummaryCard } from "@/components/ui/ActivitiesSummaryCard";
+import { Card } from "@/components/ui/Card";
 
 export default async function ActivitiesPage() {
   const [activitiesResponse, reportResponse] = await Promise.all([
@@ -47,7 +48,7 @@ export default async function ActivitiesPage() {
   ]);
 
   return (
-    <Stack direction="column" gap="4">
+    <Stack direction="column" gap="4" mt="4">
       {/* Header Section */}
       <Box>
         <Flex justifyContent="space-between" gap="4" mb="4">
@@ -69,13 +70,7 @@ export default async function ActivitiesPage() {
       <ActivitiesSummaryCard report={report} />
 
       {/* Activities Card */}
-      <Box
-        bg="bg.subtle"
-        borderRadius="lg"
-        border="1px solid"
-        borderColor="border.subtle"
-        p={{ base: "6", md: "8" }}
-      >
+      <Card>
         {activities.length === 0 ? (
           <Box textAlign="center" py="8">
             <Text fontSize="lg" color="fg.muted" mb="4">
@@ -167,7 +162,7 @@ export default async function ActivitiesPage() {
             </Table.Body>
           </Table.Root>
         )}
-      </Box>
+      </Card>
     </Stack>
   );
 }

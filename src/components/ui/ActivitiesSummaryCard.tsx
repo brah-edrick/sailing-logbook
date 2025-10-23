@@ -1,5 +1,6 @@
-import { Box, Card, Grid, Text } from "@chakra-ui/react";
+import { Box, Grid, Text } from "@chakra-ui/react";
 import { ApiActivitiesReport } from "@/types/api";
+import { Card } from "@/components/ui/Card";
 
 interface ActivitiesSummaryCardProps {
   report: ApiActivitiesReport;
@@ -18,43 +19,35 @@ export function ActivitiesSummaryCard({ report }: ActivitiesSummaryCardProps) {
   };
 
   return (
-    <Card.Root
-      mb="4"
-      bg="bg.subtle"
-      borderRadius="lg"
-      border="1px solid"
-      borderColor="border.subtle"
-    >
-      <Card.Body>
-        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap="6">
-          <Box textAlign="center">
-            <Text fontSize="4xl" fontWeight="bold" color="blue.600">
-              {formatHours(report.total.hoursSailed)}
-            </Text>
-            <Text fontSize="sm" color="fg.muted">
-              Total Hours Sailed
-            </Text>
-          </Box>
+    <Card>
+      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap="6">
+        <Box textAlign="center">
+          <Text fontSize="4xl" fontWeight="bold" color="blue.600">
+            {formatHours(report.total.hoursSailed)}
+          </Text>
+          <Text fontSize="sm" color="fg.muted">
+            Total Hours Sailed
+          </Text>
+        </Box>
 
-          <Box textAlign="center">
-            <Text fontSize="4xl" fontWeight="bold" color="green.600">
-              {formatDistance(report.total.nauticalMiles)}
-            </Text>
-            <Text fontSize="sm" color="fg.muted">
-              Nautical Miles
-            </Text>
-          </Box>
+        <Box textAlign="center">
+          <Text fontSize="4xl" fontWeight="bold" color="green.600">
+            {formatDistance(report.total.nauticalMiles)}
+          </Text>
+          <Text fontSize="sm" color="fg.muted">
+            Nautical Miles
+          </Text>
+        </Box>
 
-          <Box textAlign="center">
-            <Text fontSize="4xl" fontWeight="bold" color="purple.600">
-              {report.total.eventCount}
-            </Text>
-            <Text fontSize="sm" color="fg.muted">
-              Activities
-            </Text>
-          </Box>
-        </Grid>
-      </Card.Body>
-    </Card.Root>
+        <Box textAlign="center">
+          <Text fontSize="4xl" fontWeight="bold" color="purple.600">
+            {report.total.eventCount}
+          </Text>
+          <Text fontSize="sm" color="fg.muted">
+            Activities
+          </Text>
+        </Box>
+      </Grid>
+    </Card>
   );
 }

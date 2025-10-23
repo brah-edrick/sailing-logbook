@@ -1,5 +1,7 @@
 body {
   background: var(--chakra-colors-bg);
-  color: var(--chakra-colors-white);
+  color: var(--chakra-colors-fg);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  height: 100vh;
 }

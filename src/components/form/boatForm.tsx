@@ -15,6 +15,7 @@ import {
   NumberInput,
   Text,
 } from "@chakra-ui/react";
+import { Card } from "@/components/ui/Card";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -106,7 +107,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <Stack direction="column" gap={{ base: "6", md: "8" }}>
+      <Stack direction="column" gap="4" mt="4">
         {/* Header Section */}
         <Box>
           <Box
@@ -125,14 +126,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
         </Box>
 
         {/* Essential Information */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -242,17 +236,10 @@ export const BoatForm: React.FC<BoatFormProps> = ({
               />
             </FormField>
           </Grid>
-        </Box>
+        </Card>
 
         {/* Dimensions & Specifications */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -326,17 +313,10 @@ export const BoatForm: React.FC<BoatFormProps> = ({
               </NumberInput.Root>
             </FormField>
           </Grid>
-        </Box>
+        </Card>
 
         {/* Additional Details */}
-        <Box
-          bg="bg.muted"
-          borderRadius="xl"
-          border="1px solid"
-          borderColor="border.subtle"
-          p={{ base: "6", md: "8" }}
-          shadow="sm"
-        >
+        <Card>
           <Box mb="6">
             <Box
               as="h2"
@@ -409,7 +389,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
               />
             </FormField>
           </Stack>
-        </Box>
+        </Card>
 
         {/* Action Buttons */}
         <Flex
