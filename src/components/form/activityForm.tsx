@@ -151,8 +151,6 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     onSubmit(data);
   };
 
-  console.log(errors, isValid);
-
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Stack direction="column" gap={{ base: "6", md: "8" }}>

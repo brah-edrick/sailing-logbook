@@ -72,54 +72,6 @@ export const BoatForm: React.FC<BoatFormProps> = ({
   submitButtonText,
   isLoading = false,
 }) => {
-  // Debug: Log initial values and validation results
-  console.log("=== FORM DEBUGGING ===");
-  console.log("Initial values being validated:", initialValues);
-  console.log(
-    "Type value specifically:",
-    initialValues.type,
-    "Type:",
-    typeof initialValues.type
-  );
-
-  // Validate initial values before rendering
-  const validationResult = boatFormSchema.safeParse(initialValues);
-
-  console.log("Validation result success:", validationResult.success);
-  if (!validationResult.success) {
-    console.log("Validation errors:", validationResult.error.issues);
-  }
-
-  if (!validationResult.success) {
-    console.error(
-      "Invalid initial form values:",
-      validationResult.error.issues
-    );
-    return (
-      <Box
-        p="6"
-        bg="red.50"
-        borderRadius="md"
-        border="1px solid"
-        borderColor="red.200"
-      >
-        <Text color="red.600" fontWeight="semibold" mb="2">
-          Form Error
-        </Text>
-        <Text color="red.500" fontSize="sm">
-          Invalid initial values detected. Please check the console for details.
-        </Text>
-        <Text color="red.400" fontSize="xs" mt="2">
-          {validationResult.error.issues.map((issue, index) => (
-            <div key={index}>
-              {issue.path.join(".")}: {issue.message}
-            </div>
-          ))}
-        </Text>
-      </Box>
-    );
-  }
-
   const {
     register,
     handleSubmit,
@@ -151,14 +103,6 @@ export const BoatForm: React.FC<BoatFormProps> = ({
   const handleFormSubmit = (data: BoatFormInput) => {
     onSubmit(data);
   };
-
-  // Debug: Log form state changes
-  console.log("Form state:", {
-    errors,
-    isValid,
-    isDirty,
-    values: watch(),
-  });
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
