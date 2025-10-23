@@ -18,7 +18,8 @@ import {
 } from "@/utils/date";
 import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
-import { ApiBoat, ApiSailingActivity } from "@/types/api";
+import { ApiBoat, ApiSailingActivity, ApiBoatReport } from "@/types/api";
+import { BoatSummaryCard } from "@/components/ui/BoatSummaryCard";
 
 export default async function BoatDetailPage({
   params,
@@ -32,7 +33,7 @@ export default async function BoatDetailPage({
     notFound();
   }
 
-  const [boatResponse, activitiesResponse] = await Promise.all([
+  const [boatResponse, activitiesResponse, reportResponse] = await Promise.all([
     fetch(
       `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}`,
       {
@@ -41,6 +42,12 @@ export default async function BoatDetailPage({
     ),
     fetch(
       `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}/activities`,
+      {
+        cache: "no-store",
+      }
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}/reports`,
       {
         cache: "no-store",
       }
@@ -58,13 +65,18 @@ export default async function BoatDetailPage({
     throw new Error("Failed to fetch boat activities");
   }
 
-  const [boat, activities] = await Promise.all([
+  if (!reportResponse.ok) {
+    throw new Error("Failed to fetch boat report");
+  }
+
+  const [boat, activities, report] = await Promise.all([
     boatResponse.json() as Promise<ApiBoat>,
     activitiesResponse.json() as Promise<ApiSailingActivity[]>,
+    reportResponse.json() as Promise<ApiBoatReport>,
   ]);
 
   return (
-    <Stack direction="column" gap={{ base: "6", md: "8" }}>
+    <Stack direction="column" gap="4">
       {/* Header Section */}
       <Box>
         <Flex justifyContent="space-between" alignItems="flex-start" mb="4">
@@ -132,13 +144,15 @@ export default async function BoatDetailPage({
         </Tabs.List>
 
         <Tabs.Content value="activities">
+          {/* Boat Summary Card */}
+          <BoatSummaryCard report={report} />
+
           <Box
-            bg="bg.muted"
-            borderRadius="xl"
+            bg="bg.subtle"
+            borderRadius="lg"
             border="1px solid"
             borderColor="border.subtle"
             p={{ base: "6", md: "8" }}
-            shadow="sm"
             mt="4"
           >
             <Box mb="6">

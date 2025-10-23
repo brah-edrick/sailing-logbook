@@ -8,30 +8,46 @@ import {
   Table,
   Stack,
 } from "@chakra-ui/react";
-import { ApiSailingActivityWithBoat } from "@/types/api";
+import { ApiSailingActivityWithBoat, ApiActivitiesReport } from "@/types/api";
 import {
   formatDate,
   calculateDuration,
   formatDisplayValue,
   getFieldUnit,
 } from "@/utils/date";
+import { ActivitiesSummaryCard } from "@/components/ui/ActivitiesSummaryCard";
 
 export default async function ActivitiesPage() {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities`,
-    {
-      cache: "no-store",
-    }
-  );
+  const [activitiesResponse, reportResponse] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities`,
+      {
+        cache: "no-store",
+      }
+    ),
+    fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities/reports`,
+      {
+        cache: "no-store",
+      }
+    ),
+  ]);
 
-  if (!response.ok) {
+  if (!activitiesResponse.ok) {
     throw new Error("Failed to fetch activities");
   }
 
-  const activities = (await response.json()) as ApiSailingActivityWithBoat[];
+  if (!reportResponse.ok) {
+    throw new Error("Failed to fetch report");
+  }
+
+  const [activities, report] = await Promise.all([
+    activitiesResponse.json() as Promise<ApiSailingActivityWithBoat[]>,
+    reportResponse.json() as Promise<ApiActivitiesReport>,
+  ]);
 
   return (
-    <Stack direction="column" gap={{ base: "6", md: "8" }}>
+    <Stack direction="column" gap="4">
       {/* Header Section */}
       <Box>
         <Flex justifyContent="space-between" gap="4" mb="4">
@@ -49,14 +65,16 @@ export default async function ActivitiesPage() {
         </Flex>
       </Box>
 
+      {/* Summary Card */}
+      <ActivitiesSummaryCard report={report} />
+
       {/* Activities Card */}
       <Box
-        bg="bg.muted"
-        borderRadius="xl"
+        bg="bg.subtle"
+        borderRadius="lg"
         border="1px solid"
         borderColor="border.subtle"
         p={{ base: "6", md: "8" }}
-        shadow="sm"
       >
         {activities.length === 0 ? (
           <Box textAlign="center" py="8">
