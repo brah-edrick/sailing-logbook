@@ -278,7 +278,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
                   <NumberInput.DecrementTrigger />
                 </NumberInput.Control>
                 <NumberInput.Input
-                  placeholder="40.5"
+                  placeholder="40.5 ft"
                   bg="bg.subtle"
                   _focus={{ bg: "bg.muted", borderColor: "blue.500" }}
                 />
@@ -305,7 +305,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
                   <NumberInput.DecrementTrigger />
                 </NumberInput.Control>
                 <NumberInput.Input
-                  placeholder="13.2"
+                  placeholder="13.2 ft"
                   bg="bg.subtle"
                   _focus={{ bg: "bg.muted", borderColor: "blue.500" }}
                 />

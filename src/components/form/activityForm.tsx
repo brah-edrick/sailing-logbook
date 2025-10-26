@@ -337,7 +337,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
               />
             </FormField>
 
-            <FormField label="Distance" error={errors.distanceNm?.message}>
+            <FormField label="Distance (NM)" error={errors.distanceNm?.message}>
               <NumberInput.Root
                 value={watch("distanceNm") || ""}
                 onValueChange={(details) =>
@@ -363,7 +363,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             </FormField>
 
             <FormField
-              label="Average Speed"
+              label="Average Speed (knots)"
               error={errors.avgSpeedKnots?.message}
             >
               <NumberInput.Root
@@ -459,7 +459,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             </FormField>
 
             <FormField
-              label="Wind Speed"
+              label="Wind Speed (knots)"
               error={errors.windSpeedKnots?.message}
             >
               <NumberInput.Root
