@@ -10,6 +10,7 @@ interface SafeDeleteEntityButtonProps {
   entityType: "boat" | "activity";
   onSuccess?: () => void;
   requireConfirmation?: boolean;
+  className?: string;
 }
 
 export function SafeDeleteEntityButton({
@@ -18,6 +19,7 @@ export function SafeDeleteEntityButton({
   entityType,
   onSuccess,
   requireConfirmation = true,
+  className,
 }: SafeDeleteEntityButtonProps) {
   const router = useRouter();
 
@@ -58,7 +60,7 @@ export function SafeDeleteEntityButton({
   };
 
   const deleteButton = (
-    <Button variant="surface" colorPalette="red">
+    <Button variant="surface" colorPalette="red" className={className}>
       Delete
     </Button>
   );
@@ -66,7 +68,12 @@ export function SafeDeleteEntityButton({
   // If confirmation is not required, return a simple button
   if (!requireConfirmation) {
     return (
-      <Button variant="surface" colorPalette="red" onClick={handleDelete}>
+      <Button
+        variant="surface"
+        colorPalette="red"
+        onClick={handleDelete}
+        className={className}
+      >
         Delete
       </Button>
     );

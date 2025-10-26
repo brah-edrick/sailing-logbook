@@ -24,7 +24,7 @@
       "@test-utils/*": ["./src/__tests__/test-utils/*"]
     },
 
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "@testing-library/jest-dom"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

@@ -6,9 +6,16 @@ if (process.env.NODE_ENV !== "test") {
   );
 }
 
+// Import jest-dom matchers
+require("@testing-library/jest-dom");
+
 // Polyfills for Node.js environment
 global.structuredClone =
-  global.structuredClone || ((obj) => JSON.parse(JSON.stringify(obj)));
+  global.structuredClone ||
+  ((obj) => {
+    if (obj === undefined) return undefined;
+    return JSON.parse(JSON.stringify(obj));
+  });
 global.setImmediate = global.setImmediate || ((fn) => setTimeout(fn, 0));
 
 // Mock ResizeObserver
