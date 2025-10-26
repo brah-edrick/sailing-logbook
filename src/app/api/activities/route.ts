@@ -2,17 +2,22 @@
 import { prisma } from "@/lib/prisma";
 import { activityApiSchema } from "@/validation/schemas";
 import { NextResponse } from "next/server";
+import { maybeValidationError, errorHandlerStack } from "@/app/error-handlers";
 
 export async function GET() {
-  const activities = await prisma.sailingActivity.findMany({
-    include: {
-      boat: true,
-    },
-    orderBy: {
-      startTime: "desc",
-    },
-  });
-  return NextResponse.json(activities);
+  try {
+    const activities = await prisma.sailingActivity.findMany({
+      include: {
+        boat: true,
+      },
+      orderBy: {
+        startTime: "desc",
+      },
+    });
+    return NextResponse.json(activities);
+  } catch (error) {
+    return errorHandlerStack()(error);
+  }
 }
 
 export async function POST(req: Request) {
@@ -24,10 +29,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(activity, { status: 201 });
   } catch (error) {
-    console.error("Error creating activity:", error);
-    return NextResponse.json(
-      { error: "Invalid activity data" },
-      { status: 400 }
-    );
+    return errorHandlerStack(maybeValidationError)(error);
   }
 }

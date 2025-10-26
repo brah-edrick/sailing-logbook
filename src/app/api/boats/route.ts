@@ -2,10 +2,19 @@
 import { prisma } from "@/lib/prisma";
 import { boatApiSchema } from "@/validation/schemas";
 import { NextResponse } from "next/server";
+import {
+  maybeValidationError,
+  defaultServerError,
+  errorHandlerStack,
+} from "@/app/error-handlers";
 
 export async function GET() {
-  const boats = await prisma.boat.findMany();
-  return NextResponse.json(boats);
+  try {
+    const boats = await prisma.boat.findMany();
+    return NextResponse.json(boats);
+  } catch (error) {
+    return errorHandlerStack()(error);
+  }
 }
 
 export async function POST(req: Request) {
@@ -15,7 +24,6 @@ export async function POST(req: Request) {
     const boat = await prisma.boat.create({ data: validatedData });
     return NextResponse.json(boat, { status: 201 });
   } catch (error) {
-    console.error("Error creating boat:", error);
-    return NextResponse.json({ error: "Invalid boat data" }, { status: 400 });
+    return errorHandlerStack(maybeValidationError)(error);
   }
 }

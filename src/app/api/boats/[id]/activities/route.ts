@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { defaultServerError, errorHandlerStack } from "@/app/error-handlers";
 
 export async function GET(
   req: Request,
@@ -22,10 +23,6 @@ export async function GET(
 
     return NextResponse.json(activities);
   } catch (error) {
-    console.error("Error fetching boat activities:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch activities" },
-      { status: 500 }
-    );
+    return errorHandlerStack()(error);
   }
 }

@@ -7,13 +7,19 @@ import {
   ActivityWithBoat,
 } from "@/utils/reports";
 import { ApiBoatReport } from "@/types/api";
+import {
+  defaultServerError,
+  errorHandlerStack,
+  notFoundResponse,
+} from "@/app/error-handlers";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const boatId = parseInt(params.id);
+    const { id } = await params;
+    const boatId = parseInt(id);
 
     if (isNaN(boatId)) {
       return NextResponse.json({ error: "Invalid boat ID" }, { status: 400 });
@@ -29,7 +35,7 @@ export async function GET(
     });
 
     if (!boat) {
-      return NextResponse.json({ error: "Boat not found" }, { status: 404 });
+      return notFoundResponse("Boat not found");
     }
 
     // Get all activities for this specific boat
@@ -52,8 +58,8 @@ export async function GET(
       (activity) => ({
         id: activity.id,
         boatId: activity.boatId,
-        startTime: activity.startTime,
-        endTime: activity.endTime,
+        startTime: activity.startTime.toISOString(),
+        endTime: activity.endTime.toISOString(),
         distanceNm: activity.distanceNm,
         purpose: activity.purpose,
         boat: activity.boat,
@@ -89,10 +95,6 @@ export async function GET(
 
     return NextResponse.json(report);
   } catch (error) {
-    console.error("Error generating boat report:", error);
-    return NextResponse.json(
-      { error: "Failed to generate boat report" },
-      { status: 500 }
-    );
+    return errorHandlerStack()(error);
   }
 }

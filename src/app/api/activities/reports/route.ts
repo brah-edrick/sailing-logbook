@@ -8,6 +8,7 @@ import {
   ActivityWithBoat,
 } from "@/utils/reports";
 import { ApiActivitiesReport } from "@/types/api";
+import { defaultServerError, errorHandlerStack } from "@/app/error-handlers";
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,8 +24,8 @@ export async function GET(request: NextRequest) {
       (activity) => ({
         id: activity.id,
         boatId: activity.boatId,
-        startTime: activity.startTime,
-        endTime: activity.endTime,
+        startTime: activity.startTime.toISOString(),
+        endTime: activity.endTime.toISOString(),
         distanceNm: activity.distanceNm,
         purpose: activity.purpose,
         boat: activity.boat,
@@ -48,10 +49,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(report);
   } catch (error) {
-    console.error("Error generating report:", error);
-    return NextResponse.json(
-      { error: "Failed to generate report" },
-      { status: 500 }
-    );
+    return errorHandlerStack()(error);
   }
 }

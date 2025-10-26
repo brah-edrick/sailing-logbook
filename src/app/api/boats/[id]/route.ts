@@ -2,24 +2,21 @@
 import { prisma } from "@/lib/prisma";
 import { boatApiSchema } from "@/validation/schemas";
 import { NextResponse } from "next/server";
+import {
+  maybeValidationError,
+  defaultServerError,
+  errorHandlerStack,
+  notFoundResponse,
+} from "@/app/error-handlers";
 
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Add timeout to prevent hanging on params resolution
-    const paramsResult = (await Promise.race([
-      params,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Params timeout")), 5000)
-      ),
-    ])) as { id: string };
-
-    const { id } = paramsResult;
+    const { id } = await params;
 
     if (!id || id.trim() === "") {
-      console.warn("Empty or missing boat ID in request");
       return NextResponse.json(
         { error: "Boat ID is required" },
         { status: 400 }
@@ -36,28 +33,12 @@ export async function GET(
     });
 
     if (!boat) {
-      return NextResponse.json({ error: "Boat not found" }, { status: 404 });
+      return notFoundResponse("Boat not found");
     }
 
     return NextResponse.json(boat);
   } catch (error) {
-    console.error("Error fetching boat:", error);
-
-    // Handle specific timeout error
-    if (error instanceof Error && error.message === "Params timeout") {
-      console.error(
-        "Route params resolution timeout - possible race condition"
-      );
-      return NextResponse.json(
-        { error: "Request timeout - please try again" },
-        { status: 408 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return errorHandlerStack()(error);
   }
 }
 
@@ -67,16 +48,7 @@ export async function PUT(
 ) {
   try {
     const data = await req.json();
-
-    // Add timeout to prevent hanging on params resolution
-    const paramsResult = (await Promise.race([
-      params,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Params timeout")), 5000)
-      ),
-    ])) as { id: string };
-
-    const { id } = paramsResult;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
@@ -98,23 +70,7 @@ export async function PUT(
     });
     return NextResponse.json(boat);
   } catch (error) {
-    console.error("Error updating boat:", error);
-
-    // Handle specific timeout error
-    if (error instanceof Error && error.message === "Params timeout") {
-      console.error(
-        "Route params resolution timeout - possible race condition"
-      );
-      return NextResponse.json(
-        { error: "Request timeout - please try again" },
-        { status: 408 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return errorHandlerStack(maybeValidationError)(error);
   }
 }
 
@@ -123,15 +79,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Add timeout to prevent hanging on params resolution
-    const paramsResult = (await Promise.race([
-      params,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Params timeout")), 5000)
-      ),
-    ])) as { id: string };
-
-    const { id } = paramsResult;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
@@ -148,22 +96,6 @@ export async function DELETE(
     await prisma.boat.delete({ where: { id: numericId } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting boat:", error);
-
-    // Handle specific timeout error
-    if (error instanceof Error && error.message === "Params timeout") {
-      console.error(
-        "Route params resolution timeout - possible race condition"
-      );
-      return NextResponse.json(
-        { error: "Request timeout - please try again" },
-        { status: 408 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return errorHandlerStack()(error);
   }
 }
