@@ -1,4 +1,11 @@
 // Global test setup
+// Ensure we're in test environment
+if (process.env.NODE_ENV !== "test") {
+  throw new Error(
+    "Tests should only run in test environment. Set NODE_ENV=test"
+  );
+}
+
 // Polyfills for Node.js environment
 global.structuredClone =
   global.structuredClone || ((obj) => JSON.parse(JSON.stringify(obj)));
@@ -39,3 +46,51 @@ jest.mock("next/link", () => {
 
 // Mock global fetch
 global.fetch = jest.fn();
+
+// Global Prisma mock to prevent real database access
+jest.mock("@/lib/prisma", () => {
+  // Create a mock function that throws an error if called
+  const createMockFunction = (name) => {
+    const mockFn = jest.fn();
+    mockFn.mockImplementation(() => {
+      throw new Error(
+        `Prisma function ${name} was called but not properly mocked in test. This indicates a missing mock setup.`
+      );
+    });
+    return mockFn;
+  };
+
+  return {
+    prisma: {
+      sailingActivity: {
+        findMany: createMockFunction("sailingActivity.findMany"),
+        findUnique: createMockFunction("sailingActivity.findUnique"),
+        create: createMockFunction("sailingActivity.create"),
+        update: createMockFunction("sailingActivity.update"),
+        delete: createMockFunction("sailingActivity.delete"),
+        deleteMany: createMockFunction("sailingActivity.deleteMany"),
+        upsert: createMockFunction("sailingActivity.upsert"),
+        count: createMockFunction("sailingActivity.count"),
+        aggregate: createMockFunction("sailingActivity.aggregate"),
+        groupBy: createMockFunction("sailingActivity.groupBy"),
+      },
+      boat: {
+        findMany: createMockFunction("boat.findMany"),
+        findUnique: createMockFunction("boat.findUnique"),
+        create: createMockFunction("boat.create"),
+        update: createMockFunction("boat.update"),
+        delete: createMockFunction("boat.delete"),
+        deleteMany: createMockFunction("boat.deleteMany"),
+        upsert: createMockFunction("boat.upsert"),
+        count: createMockFunction("boat.count"),
+        aggregate: createMockFunction("boat.aggregate"),
+        groupBy: createMockFunction("boat.groupBy"),
+      },
+      $transaction: createMockFunction("$transaction"),
+      $queryRaw: createMockFunction("$queryRaw"),
+      $executeRaw: createMockFunction("$executeRaw"),
+      $connect: createMockFunction("$connect"),
+      $disconnect: createMockFunction("$disconnect"),
+    },
+  };
+});

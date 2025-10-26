@@ -2,15 +2,6 @@
  * @jest-environment node
  */
 
-// Mock Prisma
-jest.mock("@/lib/prisma", () => ({
-  prisma: {
-    sailingActivity: {
-      findMany: jest.fn(),
-    },
-  },
-}));
-
 import { GET } from "@/app/api/boats/[id]/activities/route";
 import { prisma } from "@/lib/prisma";
 import type { SailingActivity } from "@prisma/client";
@@ -77,7 +68,7 @@ describe("GET /api/boats/[id]/activities", () => {
 
     expect(response?.status).toBe(200);
     const data = await response?.json();
-    expect(data).toEqual(JSON.parse(JSON.stringify(mockActivities))); // convert to JSON to avoid date comparison issues
+    expect(data).toEqual(JSON.parse(JSON.stringify(mockActivities)));
     expect(mockPrisma.sailingActivity.findMany).toHaveBeenCalledWith({
       where: { boatId: 1 },
       include: { boat: true },

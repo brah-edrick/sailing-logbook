@@ -14,4 +14,5 @@ module.exports = {
     "^@test-utils/(.*)$": "<rootDir>/src/__tests__/test-utils/$1",
   },
   testPathIgnorePatterns: ["<rootDir>/src/__tests__/test-utils/"],
+  setupFiles: ["<rootDir>/jest.env.js"],
 };

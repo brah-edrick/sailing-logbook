@@ -1,66 +1,149 @@
-import { PrismaClient } from "@prisma/client";
+/**
+ * @jest-environment node
+ */
 
-const prisma = new PrismaClient();
+import { GET, POST } from "@/app/api/boats/route";
+import { prisma } from "@/lib/prisma";
+import { BoatApiInput } from "@/validation/schemas";
+import type { Boat } from "@prisma/client";
+import { suppressConsoleError } from "@test-utils/console";
 
-describe("Boats CRUD", () => {
-  let boatId: number;
+const mockPrisma = jest.mocked(prisma);
 
-  beforeAll(async () => {
-    await prisma.sailingActivity.deleteMany();
-    await prisma.boat.deleteMany();
+describe("GET /api/boats", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
-  test("Create a boat", async () => {
-    const boat = await prisma.boat.create({
-      data: {
-        name: "Test Boat",
+  it("should return a list of boats", async () => {
+    const mockBoats = [
+      {
+        id: 1,
+        name: "Test Boat 1",
         type: "monohull",
         make: "Test Make",
-        model: "Test Model",
-        year: 2020,
+        lengthFt: 30,
+      },
+      {
+        id: 2,
+        name: "Test Boat 2",
+        type: "catamaran",
+        make: "Test Make",
         lengthFt: 40,
       },
-    });
+    ] as Boat[];
 
-    expect(boat).toHaveProperty("id");
-    expect(boat.name).toBe("Test Boat");
+    mockPrisma.boat.findMany.mockResolvedValue(mockBoats);
 
-    boatId = boat.id;
+    const response = await GET();
+    expect(response?.status).toBe(200);
+    expect(mockPrisma.boat.findMany).toHaveBeenCalledWith();
+
+    const data = await response?.json();
+    expect(Array.isArray(data)).toBe(true);
+    expect(data).toEqual(mockBoats);
   });
 
-  test("Read a boat", async () => {
-    const boat = await prisma.boat.findUnique({
-      where: { id: boatId },
-    });
+  it("should handle database errors when fetching boats", async () => {
+    const restoreConsole = suppressConsoleError();
 
-    expect(boat).not.toBeNull();
-    if (boat) {
-      expect(boat.name).toBe("Test Boat");
-    }
+    mockPrisma.boat.findMany.mockRejectedValue(new Error("Database error"));
+
+    const response = await GET();
+    expect(response?.status).toBe(500);
+    const data = await response?.json();
+    expect(data).toEqual({ error: "Internal server error" });
+
+    restoreConsole();
+  });
+});
+
+describe("POST /api/boats", () => {
+  it("should create a new boat", async () => {
+    const mockBoat = {
+      id: 1,
+      name: "Test Boat",
+      type: "monohull",
+      make: "Test Make",
+      lengthFt: 30,
+    } as Boat;
+
+    mockPrisma.boat.create.mockResolvedValue(mockBoat);
+
+    const payload: BoatApiInput = {
+      name: "Test Boat",
+      type: "monohull",
+      make: "Test Make",
+      model: null,
+      sailNumber: null,
+      homePort: null,
+      owner: null,
+      notes: null,
+      colorHex: null,
+      year: 2020,
+      lengthFt: 30,
+      beamFt: null,
+    };
+
+    const mockRequest = {
+      json: () => Promise.resolve(payload),
+    } as Request;
+
+    const response = await POST(mockRequest);
+    expect(response?.status).toBe(201);
+
+    const data = await response?.json();
+    expect(data).toEqual(mockBoat);
   });
 
-  test("Update a boat", async () => {
-    const updated = await prisma.boat.update({
-      where: { id: boatId },
-      data: { name: "Updated Boat Name" },
-    });
+  it("should return a 400 status code if the payload is invalid", async () => {
+    const restoreConsole = suppressConsoleError();
 
-    expect(updated.name).toBe("Updated Boat Name");
+    const payload = {
+      name: "Test Boat",
+      // Missing required fields
+    };
+    const mockRequest = {
+      json: () => Promise.resolve(payload),
+    } as Request;
+
+    const response = await POST(mockRequest);
+    expect(response?.status).toBe(400);
+    const data = await response?.json();
+    expect(data).toEqual({ error: "Invalid data provided" });
+
+    restoreConsole();
   });
 
-  test("Delete a boat", async () => {
-    await prisma.boat.delete({
-      where: { id: boatId },
-    });
+  it("should handle database errors when creating boat", async () => {
+    const restoreConsole = suppressConsoleError();
 
-    const deleted = await prisma.boat.findUnique({
-      where: { id: boatId },
-    });
+    const payload: BoatApiInput = {
+      name: "Test Boat",
+      type: "monohull",
+      make: "Test Make",
+      model: null,
+      sailNumber: null,
+      homePort: null,
+      owner: null,
+      notes: null,
+      colorHex: null,
+      year: 2020,
+      lengthFt: 30,
+      beamFt: null,
+    };
 
-    expect(deleted).toBeNull();
+    mockPrisma.boat.create.mockRejectedValue(new Error("Database error"));
+
+    const mockRequest = {
+      json: () => Promise.resolve(payload),
+    } as Request;
+
+    const response = await POST(mockRequest);
+    expect(response?.status).toBe(500);
+    const data = await response?.json();
+    expect(data).toEqual({ error: "Internal server error" });
+
+    restoreConsole();
   });
 });

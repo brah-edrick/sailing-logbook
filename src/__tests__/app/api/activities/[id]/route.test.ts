@@ -2,17 +2,6 @@
  * @jest-environment node
  */
 
-// Mock Prisma
-jest.mock("@/lib/prisma", () => ({
-  prisma: {
-    sailingActivity: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-  },
-}));
-
 import { GET, PUT, DELETE } from "@/app/api/activities/[id]/route";
 import { prisma } from "@/lib/prisma";
 import type { SailingActivity } from "@prisma/client";

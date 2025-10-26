@@ -2,15 +2,6 @@
  * @jest-environment node
  */
 
-// Mock Prisma
-jest.mock("@/lib/prisma", () => ({
-  prisma: {
-    sailingActivity: {
-      findMany: jest.fn(),
-    },
-  },
-}));
-
 // Mock the reports utilities
 jest.mock("@/utils/reports", () => ({
   calculateTotalMetrics: jest.fn(),
