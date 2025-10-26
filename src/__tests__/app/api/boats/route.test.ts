@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { BoatApiInput } from "@/validation/schemas";
 import type { Boat } from "@prisma/client";
 import { suppressConsoleError } from "@test-utils/console";
+import { NextRequest } from "next/server";
 
 const mockPrisma = jest.mocked(prisma);
 
@@ -22,26 +23,64 @@ describe("GET /api/boats", () => {
         name: "Test Boat 1",
         type: "monohull",
         make: "Test Make",
+        model: "Test Model",
+        year: 2020,
         lengthFt: 30,
+        beamFt: 10,
+        sailNumber: "12345",
+        homePort: "Test Port",
+        owner: "Test Owner",
+        notes: "Test notes",
+        colorHex: "#FF0000",
       },
       {
         id: 2,
         name: "Test Boat 2",
         type: "catamaran",
-        make: "Test Make",
+        make: "Test Make 2",
+        model: "Test Model 2",
+        year: 2021,
         lengthFt: 40,
+        beamFt: 15,
+        sailNumber: "67890",
+        homePort: "Test Port 2",
+        owner: "Test Owner 2",
+        notes: "Test notes 2",
+        colorHex: "#00FF00",
       },
     ] as Boat[];
 
     mockPrisma.boat.findMany.mockResolvedValue(mockBoats);
+    mockPrisma.boat.count.mockResolvedValue(2);
 
-    const response = await GET();
+    // Create a mock request with URL
+    const mockRequest = {
+      url: "http://localhost:3000/api/boats?page=1&limit=10",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
     expect(response?.status).toBe(200);
-    expect(mockPrisma.boat.findMany).toHaveBeenCalledWith();
+    expect(mockPrisma.boat.findMany).toHaveBeenCalledWith({
+      orderBy: {
+        id: "desc",
+      },
+      skip: 0,
+      take: 10,
+    });
 
     const data = await response?.json();
-    expect(Array.isArray(data)).toBe(true);
-    expect(data).toEqual(mockBoats);
+    expect(data).toHaveProperty("data");
+    expect(data).toHaveProperty("meta");
+    expect(Array.isArray(data.data)).toBe(true);
+    expect(data.data).toHaveLength(2);
+    expect(data.meta).toMatchObject({
+      page: 1,
+      limit: 10,
+      total: 2,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    });
   });
 
   it("should handle database errors when fetching boats", async () => {
@@ -49,7 +88,12 @@ describe("GET /api/boats", () => {
 
     mockPrisma.boat.findMany.mockRejectedValue(new Error("Database error"));
 
-    const response = await GET();
+    // Create a mock request with URL
+    const mockRequest = {
+      url: "http://localhost:3000/api/boats?page=1&limit=10",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
     expect(response?.status).toBe(500);
     const data = await response?.json();
     expect(data).toEqual({ error: "Internal server error" });
@@ -87,7 +131,7 @@ describe("POST /api/boats", () => {
 
     const mockRequest = {
       json: () => Promise.resolve(payload),
-    } as Request;
+    } as NextRequest;
 
     const response = await POST(mockRequest);
     expect(response?.status).toBe(201);
@@ -105,7 +149,7 @@ describe("POST /api/boats", () => {
     };
     const mockRequest = {
       json: () => Promise.resolve(payload),
-    } as Request;
+    } as NextRequest;
 
     const response = await POST(mockRequest);
     expect(response?.status).toBe(400);
@@ -137,7 +181,7 @@ describe("POST /api/boats", () => {
 
     const mockRequest = {
       json: () => Promise.resolve(payload),
-    } as Request;
+    } as NextRequest;
 
     const response = await POST(mockRequest);
     expect(response?.status).toBe(500);

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { ActivityApiInput } from "@/validation/schemas";
 import type { SailingActivity } from "@prisma/client";
 import { suppressConsoleError } from "@test-utils/console";
+import { NextRequest } from "next/server";
 
 const mockPrisma = jest.mocked(prisma);
 
@@ -20,29 +21,174 @@ describe("GET /api/activities", () => {
       {
         id: 1,
         boatId: 1,
+        startTime: new Date("2024-01-01T10:00:00Z"),
+        endTime: new Date("2024-01-01T12:00:00Z"),
+        boat: {
+          id: 1,
+          name: "Test Boat",
+          type: "monohull",
+          make: "Test Make",
+          model: "Test Model",
+          year: 2020,
+          lengthFt: 30,
+          beamFt: 10,
+          sailNumber: "12345",
+          homePort: "Test Port",
+          owner: "Test Owner",
+          notes: "Test notes",
+          colorHex: "#FF0000",
+        },
       },
       {
         id: 2,
         boatId: 2,
+        startTime: new Date("2024-01-02T10:00:00Z"),
+        endTime: new Date("2024-01-02T12:00:00Z"),
+        boat: {
+          id: 2,
+          name: "Test Boat 2",
+          type: "catamaran",
+          make: "Test Make 2",
+          model: "Test Model 2",
+          year: 2021,
+          lengthFt: 35,
+          beamFt: 15,
+          sailNumber: "67890",
+          homePort: "Test Port 2",
+          owner: "Test Owner 2",
+          notes: "Test notes 2",
+          colorHex: "#00FF00",
+        },
       },
-    ] as SailingActivity[]; // not a complete type, but it's ok for testing
+    ] as any[];
 
     mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
+    mockPrisma.sailingActivity.count.mockResolvedValue(2);
 
-    const response = await GET();
+    // Create a mock request with URL
+    const mockRequest = {
+      url: "http://localhost:3000/api/activities?page=1&limit=10",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
     expect(response?.status).toBe(200);
     expect(mockPrisma.sailingActivity.findMany).toHaveBeenCalledWith({
       include: {
         boat: true,
       },
       orderBy: {
-        startTime: "desc",
+        id: "desc",
       },
+      skip: 0,
+      take: 10,
     });
 
     const data = await response?.json();
-    expect(Array.isArray(data)).toBe(true);
-    expect(data).toEqual(mockActivities);
+    expect(data).toHaveProperty("data");
+    expect(data).toHaveProperty("meta");
+    expect(Array.isArray(data.data)).toBe(true);
+    expect(data.data).toHaveLength(2);
+    expect(data.meta).toMatchObject({
+      page: 1,
+      limit: 10,
+      total: 2,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    });
+  });
+
+  it("should handle pagination parameters correctly", async () => {
+    const mockActivities = [
+      {
+        id: 1,
+        boatId: 1,
+        startTime: new Date("2024-01-01T10:00:00Z"),
+        endTime: new Date("2024-01-01T12:00:00Z"),
+        boat: {
+          id: 1,
+          name: "Test Boat",
+          type: "monohull",
+          make: "Test Make",
+          model: "Test Model",
+          year: 2020,
+          lengthFt: 30,
+          beamFt: 10,
+          sailNumber: "12345",
+          homePort: "Test Port",
+          owner: "Test Owner",
+          notes: "Test notes",
+          colorHex: "#FF0000",
+        },
+      },
+    ] as any[];
+
+    mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
+    mockPrisma.sailingActivity.count.mockResolvedValue(25);
+
+    // Test with custom pagination parameters
+    const mockRequest = {
+      url: "http://localhost:3000/api/activities?page=2&limit=5&sortBy=startTime&sortOrder=asc",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
+    expect(response?.status).toBe(200);
+
+    const data = await response?.json();
+    expect(data.meta).toMatchObject({
+      page: 2,
+      limit: 5,
+      total: 25,
+      totalPages: 5,
+      hasNextPage: true,
+      hasPrevPage: true,
+    });
+
+    expect(mockPrisma.sailingActivity.findMany).toHaveBeenCalledWith({
+      include: {
+        boat: true,
+      },
+      orderBy: {
+        startTime: "asc",
+      },
+      skip: 5, // (page 2 - 1) * limit 5
+      take: 5,
+    });
+  });
+
+  it("should handle invalid pagination parameters gracefully", async () => {
+    const mockActivities = [] as any[];
+    mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
+    mockPrisma.sailingActivity.count.mockResolvedValue(0);
+
+    // Test with invalid parameters (should fallback to defaults)
+    const mockRequest = {
+      url: "http://localhost:3000/api/activities?page=-1&limit=0&sortBy=invalidField",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
+    expect(response?.status).toBe(200);
+
+    const data = await response?.json();
+    expect(data.meta).toMatchObject({
+      page: 1, // Should default to 1
+      limit: 1, // Should default to minimum 1
+      total: 0,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPrevPage: false,
+    });
+
+    expect(mockPrisma.sailingActivity.findMany).toHaveBeenCalledWith({
+      include: {
+        boat: true,
+      },
+      orderBy: {
+        id: "desc", // Should fallback to default sort
+      },
+      skip: 0,
+      take: 1,
+    });
   });
 
   it("should handle database errors when fetching activities", async () => {
@@ -52,7 +198,12 @@ describe("GET /api/activities", () => {
       new Error("Database error")
     );
 
-    const response = await GET();
+    // Create a mock request with URL
+    const mockRequest = {
+      url: "http://localhost:3000/api/activities?page=1&limit=10",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
     expect(response?.status).toBe(500);
     const data = await response?.json();
     expect(data).toEqual({ error: "Internal server error" });
@@ -103,7 +254,7 @@ describe("POST /api/activities", () => {
 
     const mockRequest = {
       json: () => Promise.resolve(payload),
-    } as Request;
+    } as NextRequest;
 
     const response = await POST(mockRequest);
     expect(response?.status).toBe(201);
@@ -124,7 +275,7 @@ describe("POST /api/activities", () => {
     };
     const mockRequest = {
       json: () => Promise.resolve(payload),
-    } as Request;
+    } as NextRequest;
 
     const response = await POST(mockRequest);
     expect(response?.status).toBe(400);
@@ -160,7 +311,7 @@ describe("POST /api/activities", () => {
 
     const mockRequest = {
       json: () => Promise.resolve(payload),
-    } as Request;
+    } as NextRequest;
 
     const response = await POST(mockRequest);
     expect(response?.status).toBe(500);

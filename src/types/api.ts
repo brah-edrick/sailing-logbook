@@ -40,6 +40,35 @@ export interface ApiSailingActivityWithBoat extends ApiSailingActivity {
   boat: ApiBoat;
 }
 
+// Pagination types
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
+// Paginated response types for specific endpoints
+export type PaginatedActivitiesResponse =
+  PaginatedResponse<ApiSailingActivityWithBoat>;
+export type PaginatedBoatsResponse = PaginatedResponse<ApiBoat>;
+export type PaginatedBoatActivitiesResponse =
+  PaginatedResponse<ApiSailingActivityWithBoat>;
+
 // Report types
 export interface ReportMetrics {
   hoursSailed: number;

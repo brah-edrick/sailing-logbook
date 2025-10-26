@@ -1,17 +1,42 @@
 // app/api/boats/route.ts
 import { prisma } from "@/lib/prisma";
 import { boatApiSchema } from "@/validation/schemas";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   maybeValidationError,
   defaultServerError,
   errorHandlerStack,
 } from "@/app/error-handlers";
+import {
+  parsePaginationParams,
+  createPaginationMeta,
+  createPaginatedResponse,
+  getPrismaOrderBy,
+} from "@/utils/pagination";
+import { PaginatedBoatsResponse } from "@/types/api";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const boats = await prisma.boat.findMany();
-    return NextResponse.json(boats);
+    const { searchParams } = new URL(request.url);
+    const pagination = parsePaginationParams(searchParams);
+
+    // Get total count for pagination metadata
+    const total = await prisma.boat.count();
+
+    // Get paginated boats
+    const boats = await prisma.boat.findMany({
+      orderBy: getPrismaOrderBy(pagination.sortBy, pagination.sortOrder),
+      skip: pagination.skip,
+      take: pagination.limit,
+    });
+
+    const meta = createPaginationMeta(pagination.page, pagination.limit, total);
+    const response: PaginatedBoatsResponse = createPaginatedResponse(
+      boats,
+      meta
+    );
+
+    return NextResponse.json(response);
   } catch (error) {
     return errorHandlerStack()(error);
   }
