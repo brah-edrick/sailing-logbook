@@ -15,7 +15,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 // Mock the toaster
-jest.mock("@/components/ui/toaster", () => ({
+jest.mock("@/components/toaster", () => ({
   toaster: {
     create: jest.fn(),
   },

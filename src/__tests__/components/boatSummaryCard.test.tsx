@@ -3,7 +3,7 @@
  */
 
 import { render, screen } from "@test-utils/render";
-import { BoatSummaryCard } from "@/components/ui/BoatSummaryCard";
+import { BoatSummaryCard } from "@/components/boatSummaryCard";
 import type { ApiBoatReport } from "@/types/api";
 
 const mockReport: ApiBoatReport = {

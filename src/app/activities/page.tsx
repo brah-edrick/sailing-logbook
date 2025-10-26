@@ -15,8 +15,8 @@ import {
   formatDisplayValue,
   getFieldUnit,
 } from "@/utils/date";
-import { ActivitiesSummaryCard } from "@/components/ui/ActivitiesSummaryCard";
-import { Card } from "@/components/ui/Card";
+import { ActivitiesSummaryCard } from "@/components/activitiesSummaryCard";
+import { Card } from "@/components/card";
 
 export default async function ActivitiesPage() {
   const [activitiesResponse, reportResponse] = await Promise.all([

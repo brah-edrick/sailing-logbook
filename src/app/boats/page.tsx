@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { ApiBoat } from "@/types/api";
 import { formatDisplayValue, getFieldUnit } from "@/utils/date";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/card";
 
 export default async function BoatsPage() {
   const response = await fetch(

@@ -1,6 +1,6 @@
 import { Box, Grid, Text } from "@chakra-ui/react";
 import { ApiBoatReport } from "@/types/api";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/card";
 
 interface BoatSummaryCardProps {
   report: ApiBoatReport;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/toaster";
 import { ApiBoat } from "@/types/api";
 import { BoatForm } from "./boatForm";
 import { type BoatFormInput, type BoatType } from "@/validation/schemas";

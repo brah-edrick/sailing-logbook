@@ -3,7 +3,7 @@
  */
 
 import { render, screen } from "@test-utils/render";
-import { Navigation } from "@/components/ui/navigation";
+import { Navigation } from "@/components/navigation";
 
 // Mock next/navigation
 jest.mock("next/navigation", () => ({

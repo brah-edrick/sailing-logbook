@@ -3,7 +3,7 @@
  */
 
 import { render, screen } from "@test-utils/render";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/card";
 
 describe("Card", () => {
   it("renders children correctly", () => {
@@ -25,7 +25,7 @@ describe("Card", () => {
 
     const cardElement = container.firstChild;
     // Test that the card has visual styling applied (border, shadow, etc.)
-    const styles = window.getComputedStyle(cardElement);
+    const styles = window.getComputedStyle(cardElement as Element);
     expect(styles.borderRadius).toBeTruthy();
     // Check that border is not "none" (meaning it has some border styling)
     expect(styles.border).not.toBe("none");

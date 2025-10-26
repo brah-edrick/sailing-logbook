@@ -1,8 +1,8 @@
 import { Button, Box, Flex, Stack, Text, Grid } from "@chakra-ui/react";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/card";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
+import { SafeDeleteEntityButton } from "@/components/safeDeleteEntityButton";
 import { ApiSailingActivity } from "@/types/api";
 import {
   formatDateTime,

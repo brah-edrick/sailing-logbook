@@ -3,7 +3,7 @@
  */
 
 import { render, screen, fireEvent } from "@test-utils/render";
-import { ColorModeButton } from "@/components/ui/colorMode";
+import { ColorModeButton } from "@/components/colorMode";
 
 // Mock next-themes
 const mockSetTheme = jest.fn();
@@ -55,7 +55,7 @@ describe("ColorMode", () => {
 
     const button = container.querySelector("button");
     // Test that the button has appropriate styling for a clickable element
-    const styles = window.getComputedStyle(button);
+    const styles = window.getComputedStyle(button as Element);
     // In test environment, cursor might not be computed as "pointer"
     // So we just check that it's a valid button element with display
     expect(styles.display).toBeTruthy();

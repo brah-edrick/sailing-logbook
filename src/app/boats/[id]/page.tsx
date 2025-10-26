@@ -17,10 +17,10 @@ import {
   getFieldUnit,
 } from "@/utils/date";
 import { notFound } from "next/navigation";
-import { SafeDeleteEntityButton } from "@/components/ui/safeDeleteEntityButton";
+import { SafeDeleteEntityButton } from "@/components/safeDeleteEntityButton";
 import { ApiBoat, ApiSailingActivity, ApiBoatReport } from "@/types/api";
-import { BoatSummaryCard } from "@/components/ui/BoatSummaryCard";
-import { Card } from "@/components/ui/Card";
+import { BoatSummaryCard } from "@/components/boatSummaryCard";
+import { Card } from "@/components/card";
 
 export default async function BoatDetailPage({
   params,

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button, Dialog, Portal, CloseButton, Text } from "@chakra-ui/react";
-import { toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/toaster";
 
 interface SafeDeleteEntityButtonProps {
   entityId: number;

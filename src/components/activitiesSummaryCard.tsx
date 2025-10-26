@@ -1,6 +1,6 @@
 import { Box, Grid, Text } from "@chakra-ui/react";
 import { ApiActivitiesReport } from "@/types/api";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/card";
 
 interface ActivitiesSummaryCardProps {
   report: ApiActivitiesReport;

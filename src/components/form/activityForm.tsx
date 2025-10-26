@@ -14,7 +14,7 @@ import {
   Portal,
   NumberInput,
 } from "@chakra-ui/react";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/card";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
