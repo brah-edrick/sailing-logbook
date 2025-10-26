@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, screen, fireEvent, waitFor } from "@test-utils/render";
+import { render, screen, waitFor } from "@test-utils/render";
 import userEvent from "@testing-library/user-event";
 import { SafeDeleteEntityButton } from "@/components/safeDeleteEntityButton";
 
@@ -154,7 +154,7 @@ describe("SafeDeleteEntityButton", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(
+    render(
       <SafeDeleteEntityButton
         entityId={1}
         entityName="Test Entity"

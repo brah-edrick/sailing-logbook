@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import {
   calculateTotalMetrics,
@@ -8,9 +8,9 @@ import {
   ActivityWithBoat,
 } from "@/utils/reports";
 import { ApiActivitiesReport } from "@/types/api";
-import { defaultServerError, errorHandlerStack } from "@/app/error-handlers";
+import { errorHandlerStack } from "@/app/error-handlers";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get all activities with boat information
     const activities = await prisma.sailingActivity.findMany({

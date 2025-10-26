@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, screen, fireEvent, waitFor } from "@test-utils/render";
+import { render, screen, waitFor } from "@test-utils/render";
 import userEvent from "@testing-library/user-event";
 import { BoatForm } from "@/components/form/boatForm";
 
@@ -160,7 +160,6 @@ describe("BoatForm", () => {
   });
 
   it("disables submit button when form is invalid", async () => {
-    const user = userEvent.setup();
     render(
       <BoatForm
         onSubmit={mockOnSubmit}

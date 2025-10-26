@@ -1,5 +1,3 @@
-import { ApiSailingActivity } from "@/types/api";
-
 export interface ReportMetrics {
   hoursSailed: number;
   nauticalMiles: number;

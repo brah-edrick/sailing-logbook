@@ -7,11 +7,7 @@ import {
   ActivityWithBoat,
 } from "@/utils/reports";
 import { ApiBoatReport } from "@/types/api";
-import {
-  defaultServerError,
-  errorHandlerStack,
-  notFoundResponse,
-} from "@/app/error-handlers";
+import { errorHandlerStack, notFoundResponse } from "@/app/error-handlers";
 
 export async function GET(
   request: NextRequest,

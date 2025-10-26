@@ -78,7 +78,7 @@ describe("GET /api/activities/reports", () => {
     mockGroupByActivityType.mockReturnValue(mockByActivityType);
     mockGroupByBoatLength.mockReturnValue(mockByBoatLength);
 
-    const response = await GET({} as any);
+    const response = await GET();
 
     expect(response?.status).toBe(200);
     const data = await response?.json();
@@ -107,7 +107,7 @@ describe("GET /api/activities/reports", () => {
     mockGroupByActivityType.mockReturnValue({});
     mockGroupByBoatLength.mockReturnValue({});
 
-    const response = await GET({} as any);
+    const response = await GET();
 
     expect(response?.status).toBe(200);
     const data = await response?.json();
@@ -126,7 +126,7 @@ describe("GET /api/activities/reports", () => {
       new Error("Database error")
     );
 
-    const response = await GET({} as any);
+    const response = await GET();
 
     expect(response?.status).toBe(500);
     const data = await response?.json();

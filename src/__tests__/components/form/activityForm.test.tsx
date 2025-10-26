@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, screen, fireEvent, waitFor } from "@test-utils/render";
+import { render, screen, waitFor } from "@test-utils/render";
 import userEvent from "@testing-library/user-event";
 import { ActivityForm } from "@/components/form/activityForm";
 import type { ApiBoat } from "@/types/api";
@@ -217,7 +217,6 @@ describe("ActivityForm", () => {
   });
 
   it("disables submit button when form is invalid", async () => {
-    const user = userEvent.setup();
     render(
       <ActivityForm
         onSubmit={mockOnSubmit}

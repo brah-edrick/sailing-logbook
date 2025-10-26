@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import {
   maybeValidationError,
   maybeNotFoundOnDelete,
-  defaultServerError,
   errorHandlerStack,
   notFoundResponse,
 } from "@/app/error-handlers";

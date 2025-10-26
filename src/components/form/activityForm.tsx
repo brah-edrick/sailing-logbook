@@ -126,7 +126,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isValid },
   } = useForm<ActivityFormInput>({
     resolver: zodResolver(activityFormSchema),
     mode: "onBlur",

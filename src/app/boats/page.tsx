@@ -1,20 +1,28 @@
 import Link from "next/link";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Text,
-  Table,
-  Stack,
-} from "@chakra-ui/react";
-import { ApiBoat } from "@/types/api";
-import { formatDisplayValue, getFieldUnit } from "@/utils/date";
-import { Card } from "@/components/card";
+import { Box, Button, Flex, Heading, Text, Stack } from "@chakra-ui/react";
+import { PaginatedBoatsResponse } from "@/types/api";
+import { BoatsTable } from "@/components/boatsTable";
 
-export default async function BoatsPage() {
+export default async function BoatsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const page = params.page ? Number(params.page) : 1;
+  const limit = params.limit ? Number(params.limit) : 10;
+  const sortBy = params.sortBy as string | undefined;
+  const sortOrder = params.sortOrder as "asc" | "desc" | undefined;
+
+  // Build query string for API call
+  const queryParams = new URLSearchParams();
+  queryParams.set("page", page.toString());
+  queryParams.set("limit", limit.toString());
+  if (sortBy) queryParams.set("sortBy", sortBy);
+  if (sortOrder) queryParams.set("sortOrder", sortOrder);
+
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats`,
+    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats?${queryParams.toString()}`,
     {
       cache: "no-store",
     }
@@ -24,7 +32,7 @@ export default async function BoatsPage() {
     throw new Error("Failed to fetch boats");
   }
 
-  const boats = (await response.json()) as ApiBoat[];
+  const boatsData = (await response.json()) as PaginatedBoatsResponse;
 
   return (
     <Stack direction="column" gap="4" mt="4">
@@ -45,86 +53,8 @@ export default async function BoatsPage() {
         </Flex>
       </Box>
 
-      {/* Boats Card */}
-      <Card>
-        {boats.length === 0 ? (
-          <Box textAlign="center" py="8">
-            <Text fontSize="lg" color="fg.muted" mb="4">
-              No boats found. Add your first boat!
-            </Text>
-            <Link href="/boats/new">
-              <Button variant="surface" colorPalette="green">
-                + Add New Boat
-              </Button>
-            </Link>
-          </Box>
-        ) : (
-          <Table.Root>
-            <Table.Header>
-              <Table.Row bg="transparent">
-                <Table.ColumnHeader>Name</Table.ColumnHeader>
-                <Table.ColumnHeader>Make</Table.ColumnHeader>
-                <Table.ColumnHeader>Model</Table.ColumnHeader>
-                <Table.ColumnHeader>Year</Table.ColumnHeader>
-                <Table.ColumnHeader>Length</Table.ColumnHeader>
-                <Table.ColumnHeader></Table.ColumnHeader>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {boats.map((boat) => (
-                <Table.Row key={boat.id} bg="transparent">
-                  <Table.Cell>
-                    <Flex alignItems="center" gap="2">
-                      <Box
-                        style={{ backgroundColor: boat.colorHex || "#FFFFFF" }}
-                        borderRadius="full"
-                        boxSize="12px"
-                      />
-                      <Text>{boat.name}</Text>
-                    </Flex>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Text>{boat.make || "-"}</Text>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Text>{boat.model || "-"}</Text>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Text>{boat.year || "-"}</Text>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Text>
-                      {boat.lengthFt
-                        ? `${formatDisplayValue(boat.lengthFt.toString(), "lengthFt")} ${getFieldUnit("lengthFt")}`
-                        : "-"}
-                    </Text>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Flex gap="2" justifyContent="end">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        colorPalette="orange"
-                        asChild
-                      >
-                        <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="surface"
-                        colorPalette="blue"
-                        asChild
-                      >
-                        <Link href={`/boats/${boat.id}`}>View</Link>
-                      </Button>
-                    </Flex>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-        )}
-      </Card>
+      {/* Boats Table */}
+      <BoatsTable data={boatsData} />
     </Stack>
   );
 }

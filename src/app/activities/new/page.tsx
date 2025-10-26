@@ -1,5 +1,6 @@
 import { Text, Link } from "@chakra-ui/react";
 import { NewActivityForm } from "@/components/form/activity";
+import { PaginatedBoatsResponse } from "@/types/api";
 
 export default async function NewActivityPage({
   searchParams,
@@ -7,7 +8,7 @@ export default async function NewActivityPage({
   searchParams: Promise<{ boatId?: string }>;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats`,
+    `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats?limit=all`,
     {
       cache: "no-store",
     }
@@ -17,7 +18,8 @@ export default async function NewActivityPage({
     throw new Error("Failed to fetch boats");
   }
 
-  const boats = await response.json();
+  const boatsResponse = (await response.json()) as PaginatedBoatsResponse;
+  const boats = boatsResponse.data;
   const resolvedSearchParams = await searchParams;
   const boatIdFromParams = resolvedSearchParams.boatId;
 

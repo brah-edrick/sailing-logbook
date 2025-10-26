@@ -83,6 +83,92 @@ describe("GET /api/boats", () => {
     });
   });
 
+  it("should return all boats when limit=all is specified", async () => {
+    const mockBoats = [
+      {
+        id: 1,
+        name: "Alpha Boat",
+        type: "monohull",
+        make: "Test Make",
+        model: "Test Model",
+        year: 2020,
+        lengthFt: 30,
+        beamFt: 10,
+        sailNumber: "12345",
+        homePort: "Test Port",
+        owner: "Test Owner",
+        notes: "Test notes",
+        colorHex: "#FF0000",
+      },
+      {
+        id: 2,
+        name: "Beta Boat",
+        type: "catamaran",
+        make: "Test Make 2",
+        model: "Test Model 2",
+        year: 2021,
+        lengthFt: 40,
+        beamFt: 15,
+        sailNumber: "67890",
+        homePort: "Test Port 2",
+        owner: "Test Owner 2",
+        notes: "Test notes 2",
+        colorHex: "#00FF00",
+      },
+      {
+        id: 3,
+        name: "Charlie Boat",
+        type: "monohull",
+        make: "Test Make 3",
+        model: "Test Model 3",
+        year: 2022,
+        lengthFt: 35,
+        beamFt: 12,
+        sailNumber: "11111",
+        homePort: "Test Port 3",
+        owner: "Test Owner 3",
+        notes: "Test notes 3",
+        colorHex: "#0000FF",
+      },
+    ] as Boat[];
+
+    mockPrisma.boat.findMany.mockResolvedValue(mockBoats);
+
+    // Create a mock request with limit=all
+    const mockRequest = {
+      url: "http://localhost:3000/api/boats?limit=all",
+    } as NextRequest;
+
+    const response = await GET(mockRequest);
+    expect(response?.status).toBe(200);
+
+    // Verify that findMany was called with the correct parameters for "all" limit
+    expect(mockPrisma.boat.findMany).toHaveBeenCalledWith({
+      orderBy: { name: "asc" },
+    });
+
+    const data = await response?.json();
+    expect(data).toHaveProperty("data");
+    expect(data).toHaveProperty("meta");
+    expect(Array.isArray(data.data)).toBe(true);
+    expect(data.data).toHaveLength(3);
+
+    // Verify pagination metadata reflects "all" limit
+    expect(data.meta).toMatchObject({
+      page: 1,
+      limit: 3, // Should equal the total number of boats
+      total: 3,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    });
+
+    // Verify boats are ordered by name
+    expect(data.data[0].name).toBe("Alpha Boat");
+    expect(data.data[1].name).toBe("Beta Boat");
+    expect(data.data[2].name).toBe("Charlie Boat");
+  });
+
   it("should handle database errors when fetching boats", async () => {
     const restoreConsole = suppressConsoleError();
 

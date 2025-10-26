@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { defaultServerError, errorHandlerStack } from "@/app/error-handlers";
+import { errorHandlerStack } from "@/app/error-handlers";
 import {
   parsePaginationParams,
   createPaginationMeta,

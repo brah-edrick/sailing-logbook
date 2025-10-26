@@ -1,38 +1,44 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Stack,
-  Text,
-  Grid,
-  Table,
-  Tabs,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Stack, Text, Grid, Tabs } from "@chakra-ui/react";
 import { LuCalendar, LuShip } from "react-icons/lu";
 import Link from "next/link";
-import {
-  calculateDuration,
-  formatDate,
-  formatDisplayValue,
-  getFieldUnit,
-} from "@/utils/date";
+import { formatDisplayValue, getFieldUnit } from "@/utils/date";
 import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/safeDeleteEntityButton";
-import { ApiBoat, ApiSailingActivity, ApiBoatReport } from "@/types/api";
+import {
+  ApiBoat,
+  PaginatedBoatActivitiesResponse,
+  ApiBoatReport,
+} from "@/types/api";
 import { BoatSummaryCard } from "@/components/boatSummaryCard";
+import { BoatActivitiesTable } from "@/components/boatActivitiesTable";
 import { Card } from "@/components/card";
 
 export default async function BoatDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { id } = await params;
+  const searchParamsData = await searchParams;
   const numericId = Number(id);
 
   if (isNaN(numericId)) {
     notFound();
   }
+
+  const page = searchParamsData.page ? Number(searchParamsData.page) : 1;
+  const limit = searchParamsData.limit ? Number(searchParamsData.limit) : 10;
+  const sortBy = searchParamsData.sortBy as string | undefined;
+  const sortOrder = searchParamsData.sortOrder as "asc" | "desc" | undefined;
+
+  // Build query string for activities API call
+  const activitiesQueryParams = new URLSearchParams();
+  activitiesQueryParams.set("page", page.toString());
+  activitiesQueryParams.set("limit", limit.toString());
+  if (sortBy) activitiesQueryParams.set("sortBy", sortBy);
+  if (sortOrder) activitiesQueryParams.set("sortOrder", sortOrder);
 
   const [boatResponse, activitiesResponse, reportResponse] = await Promise.all([
     fetch(
@@ -42,7 +48,7 @@ export default async function BoatDetailPage({
       }
     ),
     fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}/activities`,
+      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/boats/${id}/activities?${activitiesQueryParams.toString()}`,
       {
         cache: "no-store",
       }
@@ -70,9 +76,9 @@ export default async function BoatDetailPage({
     throw new Error("Failed to fetch boat report");
   }
 
-  const [boat, activities, report] = await Promise.all([
+  const [boat, activitiesData, report] = await Promise.all([
     boatResponse.json() as Promise<ApiBoat>,
-    activitiesResponse.json() as Promise<ApiSailingActivity[]>,
+    activitiesResponse.json() as Promise<PaginatedBoatActivitiesResponse>,
     reportResponse.json() as Promise<ApiBoatReport>,
   ]);
 
@@ -178,86 +184,10 @@ export default async function BoatDetailPage({
                 </Flex>
               </Box>
 
-              {activities.length === 0 ? (
-                <Box textAlign="center" py="8">
-                  <Text fontSize="lg" color="fg.muted" mb="4">
-                    No activities found.
-                  </Text>
-                  <Link href={`/activities/new?boatId=${boat.id}`}>
-                    <Button variant="surface" colorPalette="green">
-                      Create your first activity!
-                    </Button>
-                  </Link>
-                </Box>
-              ) : (
-                <Table.Root>
-                  <Table.Header>
-                    <Table.Row bg="transparent">
-                      <Table.ColumnHeader>Date</Table.ColumnHeader>
-                      <Table.ColumnHeader>Duration</Table.ColumnHeader>
-                      <Table.ColumnHeader>Purpose</Table.ColumnHeader>
-                      <Table.ColumnHeader>Distance</Table.ColumnHeader>
-                      <Table.ColumnHeader></Table.ColumnHeader>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {activities.map((activity: ApiSailingActivity) => (
-                      <Table.Row key={activity.id} bg="transparent">
-                        <Table.Cell>
-                          <Text>{formatDate(activity.startTime)}</Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text>
-                            {calculateDuration(
-                              activity.startTime,
-                              activity.endTime
-                            )}
-                          </Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text>
-                            {activity.purpose
-                              ? activity.purpose.charAt(0).toUpperCase() +
-                                activity.purpose.slice(1)
-                              : "-"}
-                          </Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text>
-                            {activity.distanceNm
-                              ? `${formatDisplayValue(activity.distanceNm.toString(), "distanceNm")} ${getFieldUnit("distanceNm")}`
-                              : "-"}
-                          </Text>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Flex gap="2" justifyContent="end">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              colorPalette="orange"
-                              asChild
-                            >
-                              <Link href={`/activities/${activity.id}/edit`}>
-                                Edit
-                              </Link>
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="surface"
-                              colorPalette="blue"
-                              asChild
-                            >
-                              <Link href={`/activities/${activity.id}`}>
-                                View
-                              </Link>
-                            </Button>
-                          </Flex>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table.Root>
-              )}
+              <BoatActivitiesTable
+                data={activitiesData}
+                boatId={boat.id.toString()}
+              />
             </Card>
           </Stack>
         </Tabs.Content>

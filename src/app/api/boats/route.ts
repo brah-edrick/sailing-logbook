@@ -2,11 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { boatApiSchema } from "@/validation/schemas";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  maybeValidationError,
-  defaultServerError,
-  errorHandlerStack,
-} from "@/app/error-handlers";
+import { maybeValidationError, errorHandlerStack } from "@/app/error-handlers";
 import {
   parsePaginationParams,
   createPaginationMeta,
@@ -18,6 +14,24 @@ import { PaginatedBoatsResponse } from "@/types/api";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const limitParam = searchParams.get("limit");
+
+    // Check if "all" limit is requested
+    if (limitParam === "all") {
+      const boats = await prisma.boat.findMany({
+        orderBy: { name: "asc" }, // Default ordering for all boats
+      });
+
+      const meta = createPaginationMeta(1, boats.length, boats.length);
+      const response: PaginatedBoatsResponse = createPaginatedResponse(
+        boats,
+        meta
+      );
+
+      return NextResponse.json(response);
+    }
+
+    // Normal pagination
     const pagination = parsePaginationParams(searchParams);
 
     // Get total count for pagination metadata

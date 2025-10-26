@@ -13,7 +13,6 @@ import {
   Select,
   Portal,
   NumberInput,
-  Text,
 } from "@chakra-ui/react";
 import { Card } from "@/components/card";
 import React from "react";
@@ -78,7 +77,7 @@ export const BoatForm: React.FC<BoatFormProps> = ({
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isValid },
   } = useForm<BoatFormInput>({
     resolver: zodResolver(boatFormSchema),
     mode: "onBlur",

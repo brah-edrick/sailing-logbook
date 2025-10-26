@@ -4,7 +4,6 @@ import { boatApiSchema } from "@/validation/schemas";
 import { NextResponse } from "next/server";
 import {
   maybeValidationError,
-  defaultServerError,
   errorHandlerStack,
   notFoundResponse,
 } from "@/app/error-handlers";

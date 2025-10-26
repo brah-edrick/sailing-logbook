@@ -5,7 +5,7 @@
 import { GET, POST } from "@/app/api/activities/route";
 import { prisma } from "@/lib/prisma";
 import { ActivityApiInput } from "@/validation/schemas";
-import type { SailingActivity } from "@prisma/client";
+import type { SailingActivity, Boat } from "@prisma/client";
 import { suppressConsoleError } from "@test-utils/console";
 import { NextRequest } from "next/server";
 
@@ -60,7 +60,7 @@ describe("GET /api/activities", () => {
           colorHex: "#00FF00",
         },
       },
-    ] as any[];
+    ] as (SailingActivity & { boat: Boat })[];
 
     mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
     mockPrisma.sailingActivity.count.mockResolvedValue(2);
@@ -121,7 +121,7 @@ describe("GET /api/activities", () => {
           colorHex: "#FF0000",
         },
       },
-    ] as any[];
+    ] as (SailingActivity & { boat: Boat })[];
 
     mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
     mockPrisma.sailingActivity.count.mockResolvedValue(25);
@@ -157,7 +157,7 @@ describe("GET /api/activities", () => {
   });
 
   it("should handle invalid pagination parameters gracefully", async () => {
-    const mockActivities = [] as any[];
+    const mockActivities = [] as (SailingActivity & { boat: Boat })[];
     mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
     mockPrisma.sailingActivity.count.mockResolvedValue(0);
 

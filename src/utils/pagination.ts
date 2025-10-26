@@ -1,8 +1,4 @@
-import {
-  PaginationParams,
-  PaginationMeta,
-  PaginatedResponse,
-} from "@/types/api";
+import { PaginationMeta, PaginatedResponse } from "@/types/api";
 
 export interface PaginationQuery {
   page: number;

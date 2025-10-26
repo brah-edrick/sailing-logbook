@@ -16,6 +16,7 @@ import {
   groupByActivityType,
   groupActivitiesByField,
 } from "@/utils/reports";
+import { NextRequest } from "next/server";
 import { suppressConsoleError } from "@test-utils/console";
 
 const mockPrisma = jest.mocked(prisma);
@@ -106,7 +107,7 @@ describe("GET /api/boats/[id]/reports", () => {
       .mockReturnValueOnce(mockByMonth)
       .mockReturnValueOnce(mockByYear);
 
-    const response = await GET({} as any, {
+    const response = await GET({} as NextRequest, {
       params: Promise.resolve({ id: "1" }),
     });
 
@@ -137,7 +138,7 @@ describe("GET /api/boats/[id]/reports", () => {
   });
 
   it("should return 400 for invalid boat ID", async () => {
-    const response = await GET({} as any, {
+    const response = await GET({} as NextRequest, {
       params: Promise.resolve({ id: "invalid" }),
     });
 
@@ -149,7 +150,7 @@ describe("GET /api/boats/[id]/reports", () => {
   it("should return 404 when boat not found", async () => {
     mockPrisma.boat.findUnique.mockResolvedValue(null);
 
-    const response = await GET({} as any, {
+    const response = await GET({} as NextRequest, {
       params: Promise.resolve({ id: "999" }),
     });
 
@@ -187,7 +188,7 @@ describe("GET /api/boats/[id]/reports", () => {
     mockGroupByActivityType.mockReturnValue({});
     mockGroupActivitiesByField.mockReturnValueOnce({}).mockReturnValueOnce({});
 
-    const response = await GET({} as any, {
+    const response = await GET({} as NextRequest, {
       params: Promise.resolve({ id: "1" }),
     });
 
@@ -208,7 +209,7 @@ describe("GET /api/boats/[id]/reports", () => {
 
     mockPrisma.boat.findUnique.mockRejectedValue(new Error("Database error"));
 
-    const response = await GET({} as any, {
+    const response = await GET({} as NextRequest, {
       params: Promise.resolve({ id: "1" }),
     });
 
