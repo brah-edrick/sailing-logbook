@@ -30,8 +30,8 @@ describe("GET /api/activities/[id]", () => {
     const mockActivity = {
       id: 1,
       boatId: 1,
-      startTime: "2024-01-01T10:00:00Z",
-      endTime: "2024-01-01T12:00:00Z",
+      startTime: new Date("2024-01-01T10:00:00Z"),
+      endTime: new Date("2024-01-01T12:00:00Z"),
       notes: null,
       departureLocation: "Marina",
       returnLocation: "Marina",
@@ -44,7 +44,7 @@ describe("GET /api/activities/[id]", () => {
       sailConfiguration: "Full main and jib",
       activityType: "sailing",
       purpose: "cruising",
-    } as any;
+    } as SailingActivity;
 
     mockPrisma.sailingActivity.findUnique.mockResolvedValue(mockActivity);
 
@@ -53,7 +53,7 @@ describe("GET /api/activities/[id]", () => {
 
     expect(response?.status).toBe(200);
     const data = await response?.json();
-    expect(data).toEqual(mockActivity);
+    expect(data).toEqual(JSON.parse(JSON.stringify(mockActivity))); // convert to JSON to avoid date comparison issues
     expect(mockPrisma.sailingActivity.findUnique).toHaveBeenCalledWith({
       where: { id: 1 },
     });
@@ -97,9 +97,20 @@ describe("PUT /api/activities/[id]", () => {
     const mockActivity = {
       id: 1,
       boatId: 1,
-      startTime: "2024-01-01T10:00:00Z",
-      endTime: "2024-01-01T12:00:00Z",
-    } as any;
+      startTime: new Date("2024-01-01T10:00:00Z"),
+      endTime: new Date("2024-01-01T12:00:00Z"),
+      notes: "Great day on the water",
+      departureLocation: "Marina",
+      returnLocation: "Marina",
+      distanceNm: 5,
+      avgSpeedKnots: 6,
+      windSpeedKnots: 10,
+      weatherConditions: "sunny",
+      windDirection: "n",
+      seaState: "calm",
+      sailConfiguration: "Full main and jib",
+      purpose: "cruising",
+    } as SailingActivity;
 
     const payload: ActivityApiInput = {
       boatId: 1,
@@ -129,7 +140,7 @@ describe("PUT /api/activities/[id]", () => {
 
     expect(response?.status).toBe(200);
     const data = await response?.json();
-    expect(data).toEqual(mockActivity);
+    expect(data).toEqual(JSON.parse(JSON.stringify(mockActivity))); // convert to JSON to avoid date comparison issues
     expect(mockPrisma.sailingActivity.update).toHaveBeenCalledWith({
       where: { id: 1 },
       data: payload,

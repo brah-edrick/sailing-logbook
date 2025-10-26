@@ -16,6 +16,13 @@ import { prisma } from "@/lib/prisma";
 import type { SailingActivity } from "@prisma/client";
 import { suppressConsoleError } from "@test-utils/console";
 
+type SailingActivityWithBoat = SailingActivity & {
+  boat: {
+    id: number;
+    name: string;
+  };
+};
+
 const mockPrisma = jest.mocked(prisma);
 
 describe("GET /api/boats/[id]/activities", () => {
@@ -40,7 +47,6 @@ describe("GET /api/boats/[id]/activities", () => {
         weatherConditions: "sunny",
         seaState: "calm",
         sailConfiguration: "Full main and jib",
-        activityType: "sailing",
         purpose: "cruising",
         boat: { id: 1, name: "Test Boat" },
       },
@@ -59,11 +65,10 @@ describe("GET /api/boats/[id]/activities", () => {
         weatherConditions: "sunny",
         seaState: "calm",
         sailConfiguration: "Full main and jib",
-        activityType: "sailing",
         purpose: "cruising",
         boat: { id: 1, name: "Test Boat" },
       },
-    ] as any[];
+    ] as SailingActivityWithBoat[];
 
     mockPrisma.sailingActivity.findMany.mockResolvedValue(mockActivities);
 
@@ -72,7 +77,7 @@ describe("GET /api/boats/[id]/activities", () => {
 
     expect(response?.status).toBe(200);
     const data = await response?.json();
-    expect(data).toEqual(JSON.parse(JSON.stringify(mockActivities)));
+    expect(data).toEqual(JSON.parse(JSON.stringify(mockActivities))); // convert to JSON to avoid date comparison issues
     expect(mockPrisma.sailingActivity.findMany).toHaveBeenCalledWith({
       where: { boatId: 1 },
       include: { boat: true },
