@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SafeDeleteEntityButton } from "@/components/safeDeleteEntityButton";
 import { ApiSailingActivity } from "@/types/api";
+import { AuthGuard } from "@/components/authGuard";
 import {
   formatDateTime,
   calculateDuration,
@@ -80,18 +81,23 @@ export default async function ActivityDetailPage({
               Activity - {formatDateTime(activity.startTime)}
             </Box>
             <Box color="fg.muted" fontSize="sm">
-              View your sailing activity details and performance metrics
+              View Brandon&apos;s sailing activity details and performance
+              metrics
             </Box>
           </Box>
           <Stack direction="row" gap="2">
-            <Button variant="surface" colorPalette="orange" asChild>
-              <Link href={`/activities/${activity.id}/edit`}>Edit</Link>
-            </Button>
-            <SafeDeleteEntityButton
-              entityId={activity.id}
-              entityName={`Activity - ${formatDateTime(activity.startTime)}`}
-              entityType="activity"
-            />
+            <AuthGuard>
+              <Button variant="surface" colorPalette="orange" asChild>
+                <Link href={`/activities/${activity.id}/edit`}>Edit</Link>
+              </Button>
+            </AuthGuard>
+            <AuthGuard>
+              <SafeDeleteEntityButton
+                entityId={activity.id}
+                entityName={`Activity - ${formatDateTime(activity.startTime)}`}
+                entityType="activity"
+              />
+            </AuthGuard>
           </Stack>
         </Flex>
         <Link href="/activities">

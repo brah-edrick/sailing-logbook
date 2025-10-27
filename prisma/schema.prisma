@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,9 +8,9 @@ datasource db {
 }
 
 model Boat {
-  id         Int       @id @default(autoincrement())
+  id         Int               @id @default(autoincrement())
   name       String
-  type       String?   // Monohull, Trimaran, etc.
+  type       String?
   make       String
   model      String?
   year       Int?
@@ -28,21 +25,20 @@ model Boat {
 }
 
 model SailingActivity {
-  id                 Int      @id @default(autoincrement())
-  boatId             Int
-  startTime          DateTime
-  endTime            DateTime
-  departureLocation  String?
-  returnLocation     String?
-  distanceNm         Float?
-  avgSpeedKnots      Float?
-  weatherConditions  String?
-  windSpeedKnots     Float?
-  windDirection      String?
-  seaState           String?
-  sailConfiguration  String?
-  purpose            String?
-  notes              String?
-
-  boat Boat @relation(fields: [boatId], references: [id])
+  id                Int      @id @default(autoincrement())
+  boatId            Int
+  startTime         DateTime
+  endTime           DateTime
+  departureLocation String?
+  returnLocation    String?
+  distanceNm        Float?
+  avgSpeedKnots     Float?
+  weatherConditions String?
+  windSpeedKnots    Float?
+  windDirection     String?
+  seaState          String?
+  sailConfiguration String?
+  purpose           String?
+  notes             String?
+  boat              Boat     @relation(fields: [boatId], references: [id])
 }

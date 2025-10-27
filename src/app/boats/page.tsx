@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Box, Button, Flex, Heading, Text, Stack } from "@chakra-ui/react";
 import { PaginatedBoatsResponse } from "@/types/api";
 import { BoatsTable } from "@/components/boatsTable";
+import { AuthGuard } from "@/components/authGuard";
 
 export default async function BoatsPage({
   searchParams,
@@ -41,15 +42,17 @@ export default async function BoatsPage({
         <Flex justifyContent="space-between" gap="4" mb="4">
           <Box>
             <Heading size="3xl" mb="2">
-              My Boats
+              Boats
             </Heading>
             <Text color="fg.muted" fontSize="sm">
-              Manage your boat fleet and specifications
+              View Brandon&apos;s boat fleet and specifications
             </Text>
           </Box>
-          <Button variant="surface" colorPalette="green" asChild>
-            <Link href="/boats/new">+ Add New Boat</Link>
-          </Button>
+          <AuthGuard>
+            <Button variant="surface" colorPalette="green" asChild>
+              <Link href="/boats/new">+ Add New Boat</Link>
+            </Button>
+          </AuthGuard>
         </Flex>
       </Box>
 

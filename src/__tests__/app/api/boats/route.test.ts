@@ -11,6 +11,13 @@ import { NextRequest } from "next/server";
 
 const mockPrisma = jest.mocked(prisma);
 
+// Mock authentication
+jest.mock("@/lib/authUtils", () => ({
+  requireAuth: jest.fn().mockResolvedValue({
+    user: { id: "test-user", name: "Test User", email: "test@example.com" },
+  }),
+}));
+
 describe("GET /api/boats", () => {
   beforeEach(() => {
     jest.clearAllMocks();

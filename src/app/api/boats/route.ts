@@ -10,6 +10,7 @@ import {
   getPrismaOrderBy,
 } from "@/utils/pagination";
 import { PaginatedBoatsResponse } from "@/types/api";
+import { requireAuth } from "@/lib/authUtils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,6 +59,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(req: Request) {
   try {
+    await requireAuth(); // Require authentication for creating boats
+
     const data = await req.json();
     const validatedData = boatApiSchema.parse(data);
     const boat = await prisma.boat.create({ data: validatedData });

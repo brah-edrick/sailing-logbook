@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Provider } from "@/components/provider";
+import { Providers } from "@/components/providers";
 
 import "./globals.css";
 import { Container } from "@chakra-ui/react";
@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sailing Log",
-  description: "Track your sailing activities and boat information",
+  title: "Brandon&apos;s Sailing Log",
+  description: "View Brandon&apos;s sailing activities and boat information",
 };
 
 export default function RootLayout({
@@ -30,13 +30,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Provider>
+        <Providers>
           <Container maxW="4xl">
             <Navigation />
             {children}
           </Container>
           <Toaster />
-        </Provider>
+        </Providers>
       </body>
     </html>
   );

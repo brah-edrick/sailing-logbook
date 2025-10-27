@@ -1,6 +1,81 @@
 # Sailing Logbook
 
-A modern web application for tracking sailing activities and boat management.
+A modern web application for tracking sailing activities and boat management with authentication and authorization.
+
+## Features
+
+- **Public Viewing**: Anyone can view sailing activities and boat information
+- **Authenticated Editing**: Only logged-in users can create, edit, or delete data
+- **Single User Support**: Designed for personal use with simple authentication
+- **Responsive Design**: Works on desktop and mobile devices
+- **Data Management**: Track boats, sailing activities, and performance metrics
+
+## Authentication
+
+This application uses NextAuth.js for authentication with a simple credential-based system designed for single-user access.
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# Authentication Configuration
+AUTH_USERNAME=admin
+AUTH_PASSWORD=your-secure-password-here
+NEXTAUTH_SECRET=your-nextauth-secret-here
+NEXTAUTH_URL=http://localhost:3000
+
+# Database
+DATABASE_URL="file:./dev.db"
+
+# App Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Security Notes
+
+- **Change Default Credentials**: Update `AUTH_USERNAME` and `AUTH_PASSWORD` to secure values
+- **Generate Secret**: Use a strong random string for `NEXTAUTH_SECRET`
+- **Production URLs**: Update `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL` for production deployment
+
+### Access Control
+
+- **Public Access**: Viewing activities, boats, and reports
+- **Authenticated Access**: Creating, editing, and deleting activities and boats
+- **Login Required**: Edit buttons and forms are hidden for non-authenticated users
+
+## Getting Started
+
+1. **Install Dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+2. **Set Up Environment Variables**:
+
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+3. **Set Up Database**:
+
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+4. **Start Development Server**:
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Access the Application**:
+   - Visit `http://localhost:3000`
+   - Click "Sign In" to authenticate
+   - Use your configured credentials
 
 ## Testing Strategy
 

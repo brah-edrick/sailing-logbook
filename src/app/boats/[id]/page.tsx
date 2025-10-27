@@ -12,6 +12,7 @@ import {
 import { BoatSummaryCard } from "@/components/boatSummaryCard";
 import { BoatActivitiesTable } from "@/components/boatActivitiesTable";
 import { Card } from "@/components/card";
+import { AuthGuard } from "@/components/authGuard";
 
 export default async function BoatDetailPage({
   params,
@@ -103,23 +104,29 @@ export default async function BoatDetailPage({
               />
             </Flex>
             <Box color="fg.muted" fontSize="sm">
-              View your boat details and sailing activities
+              View Brandon&apos;s boat details and sailing activities
             </Box>
           </Box>
           <Stack direction="row" gap="2">
-            <Link href={`/activities/new?boatId=${boat.id}`}>
-              <Button variant="surface" colorPalette="green">
-                + Add New Activity
+            <AuthGuard>
+              <Link href={`/activities/new?boatId=${boat.id}`}>
+                <Button variant="surface" colorPalette="green">
+                  + Add New Activity
+                </Button>
+              </Link>
+            </AuthGuard>
+            <AuthGuard>
+              <Button variant="surface" colorPalette="orange" asChild>
+                <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
               </Button>
-            </Link>
-            <Button variant="surface" colorPalette="orange" asChild>
-              <Link href={`/boats/${boat.id}/edit`}>Edit</Link>
-            </Button>
-            <SafeDeleteEntityButton
-              entityId={boat.id}
-              entityName={boat.name}
-              entityType="boat"
-            />
+            </AuthGuard>
+            <AuthGuard>
+              <SafeDeleteEntityButton
+                entityId={boat.id}
+                entityName={boat.name}
+                entityType="boat"
+              />
+            </AuthGuard>
           </Stack>
         </Flex>
         <Link href="/boats">
@@ -173,14 +180,16 @@ export default async function BoatDetailPage({
                       Sailing Activities
                     </Box>
                     <Box color="fg.muted" fontSize="sm">
-                      Track your sailing adventures with this boat
+                      Track Brandon&apos;s sailing adventures with this boat
                     </Box>
                   </Box>
-                  <Link href={`/activities/new?boatId=${boat.id}`}>
-                    <Button variant="surface" size="sm" colorPalette="green">
-                      + Add New Activity
-                    </Button>
-                  </Link>
+                  <AuthGuard>
+                    <Link href={`/activities/new?boatId=${boat.id}`}>
+                      <Button variant="surface" size="sm" colorPalette="green">
+                        + Add New Activity
+                      </Button>
+                    </Link>
+                  </AuthGuard>
                 </Flex>
               </Box>
 

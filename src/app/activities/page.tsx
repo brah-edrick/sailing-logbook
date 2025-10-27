@@ -3,6 +3,7 @@ import { Box, Button, Flex, Heading, Text, Stack } from "@chakra-ui/react";
 import { PaginatedActivitiesResponse, ApiActivitiesReport } from "@/types/api";
 import { ActivitiesSummaryCard } from "@/components/activitiesSummaryCard";
 import { ActivitiesTable } from "@/components/activitiesTable";
+import { AuthGuard } from "@/components/authGuard";
 
 export default async function ActivitiesPage({
   searchParams,
@@ -60,12 +61,14 @@ export default async function ActivitiesPage({
               Activities
             </Heading>
             <Text color="fg.muted" fontSize="sm">
-              Track and manage your sailing activities
+              View Brandon&apos;s sailing activities
             </Text>
           </Box>
-          <Button variant="surface" colorPalette="green" asChild>
-            <Link href="/activities/new">+ Add New Activity</Link>
-          </Button>
+          <AuthGuard>
+            <Button variant="surface" colorPalette="green" asChild>
+              <Link href="/activities/new">+ Add New Activity</Link>
+            </Button>
+          </AuthGuard>
         </Flex>
       </Box>
 

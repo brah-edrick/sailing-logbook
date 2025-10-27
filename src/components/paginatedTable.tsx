@@ -5,6 +5,7 @@ import { Box, Button, Text, Table, Spinner } from "@chakra-ui/react";
 import { PaginationMeta } from "@/types/api";
 import { Pagination } from "@/components/pagination";
 import { Card } from "@/components/card";
+import { AuthGuard } from "@/components/authGuard";
 
 interface Column<T> {
   field: keyof T;
@@ -61,11 +62,13 @@ export function PaginatedTable<T>({
             {emptyStateMessage}
           </Text>
           {emptyStateAction && (
-            <Link href={emptyStateAction.href}>
-              <Button variant="surface" colorPalette="green">
-                {emptyStateAction.label}
-              </Button>
-            </Link>
+            <AuthGuard>
+              <Link href={emptyStateAction.href}>
+                <Button variant="surface" colorPalette="green">
+                  {emptyStateAction.label}
+                </Button>
+              </Link>
+            </AuthGuard>
           )}
         </Box>
       </Card>

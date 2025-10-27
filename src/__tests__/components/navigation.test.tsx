@@ -14,7 +14,7 @@ describe("Navigation", () => {
   it("renders the navigation with sailboat emoji", () => {
     render(<Navigation />);
 
-    expect(screen.getByText("⛵ Sailing Log")).toBeInTheDocument();
+    expect(screen.getByText("⛵ Brandon's Sailing Log")).toBeInTheDocument();
   });
 
   it("renders all navigation links", () => {

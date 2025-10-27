@@ -10,6 +10,7 @@ import {
   getPrismaOrderBy,
 } from "@/utils/pagination";
 import { PaginatedActivitiesResponse } from "@/types/api";
+import { requireAuth } from "@/lib/authUtils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,6 +51,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(req: Request) {
   try {
+    await requireAuth(); // Require authentication for creating activities
+
     const data = await req.json();
     const validatedData = activityApiSchema.parse(data);
     const activity = await prisma.sailingActivity.create({

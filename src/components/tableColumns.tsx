@@ -8,6 +8,7 @@ import {
   formatDisplayValue,
   getFieldUnit,
 } from "@/utils/date";
+import { AuthGuard } from "./authGuard";
 
 export const activitiesColumns: Column<ApiSailingActivityWithBoat>[] = [
   {
@@ -72,9 +73,11 @@ export const activitiesColumns: Column<ApiSailingActivityWithBoat>[] = [
     label: "",
     render: (id) => (
       <Flex gap="2" justifyContent="end">
-        <Button size="sm" variant="outline" colorPalette="orange" asChild>
-          <Link href={`/activities/${id}/edit`}>Edit</Link>
-        </Button>
+        <AuthGuard>
+          <Button size="sm" variant="outline" colorPalette="orange" asChild>
+            <Link href={`/activities/${id}/edit`}>Edit</Link>
+          </Button>
+        </AuthGuard>
         <Button size="sm" variant="surface" colorPalette="blue" asChild>
           <Link href={`/activities/${id}`}>View</Link>
         </Button>
@@ -130,9 +133,11 @@ export const boatsColumns: Column<ApiBoat>[] = [
     label: "",
     render: (id) => (
       <Flex gap="2" justifyContent="end">
-        <Button size="sm" variant="outline" colorPalette="orange" asChild>
-          <Link href={`/boats/${id}/edit`}>Edit</Link>
-        </Button>
+        <AuthGuard>
+          <Button size="sm" variant="outline" colorPalette="orange" asChild>
+            <Link href={`/boats/${id}/edit`}>Edit</Link>
+          </Button>
+        </AuthGuard>
         <Button size="sm" variant="surface" colorPalette="blue" asChild>
           <Link href={`/boats/${id}`}>View</Link>
         </Button>
@@ -183,9 +188,11 @@ export const boatActivitiesColumns: Column<ApiSailingActivityWithBoat>[] = [
     label: "",
     render: (id) => (
       <Flex gap="2" justifyContent="end">
-        <Button size="sm" variant="outline" colorPalette="orange" asChild>
-          <Link href={`/activities/${id}/edit`}>Edit</Link>
-        </Button>
+        <AuthGuard>
+          <Button size="sm" variant="outline" colorPalette="orange" asChild>
+            <Link href={`/activities/${id}/edit`}>Edit</Link>
+          </Button>
+        </AuthGuard>
         <Button size="sm" variant="surface" colorPalette="blue" asChild>
           <Link href={`/activities/${id}`}>View</Link>
         </Button>

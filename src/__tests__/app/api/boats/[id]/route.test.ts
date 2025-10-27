@@ -10,6 +10,13 @@ import { suppressConsoleError } from "@test-utils/console";
 
 const mockPrisma = jest.mocked(prisma);
 
+// Mock authentication
+jest.mock("@/lib/authUtils", () => ({
+  requireAuth: jest.fn().mockResolvedValue({
+    user: { id: "test-user", name: "Test User", email: "test@example.com" },
+  }),
+}));
+
 describe("GET /api/boats/[id]", () => {
   beforeEach(() => {
     jest.clearAllMocks();

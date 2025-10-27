@@ -7,6 +7,7 @@ import {
   errorHandlerStack,
   notFoundResponse,
 } from "@/app/error-handlers";
+import { requireAuth } from "@/lib/authUtils";
 
 export async function GET(
   req: Request,
@@ -46,6 +47,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAuth(); // Require authentication for updating boats
+
     const data = await req.json();
     const { id } = await params;
 
@@ -78,6 +81,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAuth(); // Require authentication for deleting boats
+
     const { id } = await params;
 
     if (!id) {
