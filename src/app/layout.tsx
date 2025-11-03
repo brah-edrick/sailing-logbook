@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <Container maxW="4xl">
+          <Container maxW="4xl" minH="100vh" bg="bg">
             <Navigation />
             {children}
           </Container>
