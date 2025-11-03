@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Brandon&apos;s Sailing Log",
-  description: "View Brandon&apos;s sailing activities and boat information",
+  title: "Brandon's Sailing Log",
+  description: "View Brandon's sailing activities and boat information",
 };
 
 export default function RootLayout({

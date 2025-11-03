@@ -25,7 +25,8 @@ AUTH_PASSWORD=your-secure-password-here
 NEXTAUTH_SECRET=your-nextauth-secret-here
 NEXTAUTH_URL=http://localhost:3000
 
-# Database
+# Database (for local development with SQLite)
+# For production on Vercel, use PostgreSQL connection string
 DATABASE_URL="file:./dev.db"
 
 # App Configuration
@@ -61,9 +62,23 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 3. **Set Up Database**:
 
+   **Note**: This application uses PostgreSQL. For local development, you can either:
+   - Use a local PostgreSQL installation
+   - Use Docker to run PostgreSQL: `docker run --name sailing-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres`
+   - Use a cloud PostgreSQL database (e.g., Vercel Postgres, Supabase, Neon)
+
+   Update your `.env.local` with your PostgreSQL connection string:
+
+   ```bash
+   DATABASE_URL="postgresql://user:password@localhost:5432/sailing_logbook"
+   ```
+
+   Then set up the database:
+
    ```bash
    npx prisma generate
    npx prisma db push
+   # Or if you have migrations: npx prisma migrate dev
    ```
 
 4. **Start Development Server**:
@@ -178,3 +193,162 @@ When adding new features:
 - **Efficient**: Focuses testing effort on the most valuable areas
 
 This testing strategy ensures code quality while maintaining development velocity and test reliability.
+
+## Deployment to Vercel
+
+This application is configured for deployment on Vercel with PostgreSQL database support.
+
+### Prerequisites
+
+1. **Vercel Account**: Sign up or log in at [vercel.com](https://vercel.com)
+2. **GitHub/GitLab/Bitbucket Repository**: Push your code to a git repository
+3. **Node.js 18+**: Ensure your local environment matches production
+
+### Step 1: Connect Your Repository
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "Add New..." → "Project"
+3. Import your repository from GitHub/Gitlab/Bitbucket
+4. Vercel will auto-detect Next.js framework
+
+### Step 2: Set Up Vercel Postgres Database
+
+**Option A: Vercel Postgres (Recommended)**
+
+1. In your Vercel project dashboard, go to the **Storage** tab
+2. Click "Create Database" → Select "Postgres"
+3. Choose a plan (Hobby plan is free for development)
+4. Give your database a name and select a region
+5. Click "Create"
+6. The `DATABASE_URL` environment variable will be automatically added to your project
+
+**Option B: External PostgreSQL Database**
+
+If you prefer an external database provider (Supabase, Neon, Railway, etc.):
+
+1. Create a PostgreSQL database with your provider
+2. Copy the connection string
+3. Add it as `DATABASE_URL` in Vercel environment variables (see Step 3)
+
+### Step 3: Configure Environment Variables
+
+In your Vercel project dashboard, go to **Settings** → **Environment Variables** and add:
+
+#### Required Variables
+
+```bash
+# Database (auto-set if using Vercel Postgres)
+DATABASE_URL=postgresql://user:password@host:port/database?schema=public
+
+# Authentication
+AUTH_USERNAME=your-username
+AUTH_PASSWORD=your-secure-password
+
+# NextAuth Configuration
+NEXTAUTH_SECRET=your-random-secret-here
+# NEXTAUTH_URL is automatically set by Vercel
+
+# App Configuration (optional, auto-set by Vercel)
+# NEXT_PUBLIC_APP_URL is automatically set by Vercel
+```
+
+**Note**: Vercel automatically sets `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL` based on your deployment URL, so you typically don't need to set these manually.
+
+**Generate NEXTAUTH_SECRET**: You can generate a secure secret using:
+
+```bash
+openssl rand -base64 32
+```
+
+### Step 4: Run Database Migrations
+
+After your first deployment:
+
+1. Go to your Vercel project dashboard
+2. Click on the latest deployment
+3. Open the deployment logs to verify migrations ran successfully
+4. Alternatively, you can run migrations manually using Vercel CLI:
+
+```bash
+# Install Vercel CLI (if not already installed)
+npm i -g vercel
+
+# Pull environment variables locally
+vercel env pull .env.local
+
+# Run migrations
+npx prisma migrate deploy
+```
+
+**Note**: The `vercel.json` configuration includes automatic migration deployment during build, so migrations should run automatically on each deploy.
+
+### Step 5: Deploy
+
+1. Vercel will automatically deploy when you:
+   - Push to the main/master branch (production)
+   - Create a pull request (preview deployment)
+2. Monitor the deployment in the Vercel dashboard
+3. Once deployed, visit your app URL (provided by Vercel)
+
+### Post-Deployment Checklist
+
+- [ ] Verify the app loads at your Vercel URL
+- [ ] Test authentication/login functionality
+- [ ] Verify database connection (try creating a boat or activity)
+- [ ] Check that migrations ran successfully (verify tables exist)
+- [ ] Test both public viewing and authenticated editing
+
+### Troubleshooting
+
+**Database Connection Issues**
+
+- Verify `DATABASE_URL` is correctly set in Vercel environment variables
+- Check that your database allows connections from Vercel's IP addresses
+- Ensure your database is not in a private network that blocks external access
+
+**Migration Failures**
+
+- Check deployment logs for migration errors
+- Verify your Prisma schema matches your database structure
+- Run `prisma migrate status` locally to check migration state
+
+**Build Failures**
+
+- Ensure all environment variables are set
+- Check that `NEXTAUTH_SECRET` is set (required for build)
+- Verify Prisma client generates successfully
+
+**Authentication Issues**
+
+- Ensure `AUTH_USERNAME` and `AUTH_PASSWORD` are set
+- Verify `NEXTAUTH_SECRET` is set and matches across all environments
+- Check that `NEXTAUTH_URL` is correctly set (auto-set by Vercel)
+
+### Local Development After Deployment
+
+To continue local development with PostgreSQL:
+
+1. Update your `.env.local`:
+
+   ```bash
+   DATABASE_URL="postgresql://user:password@localhost:5432/sailing_logbook"
+   # Or use your Vercel Postgres connection string for local testing
+   ```
+
+2. Run migrations locally:
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+3. Generate Prisma client:
+   ```bash
+   npx prisma generate
+   ```
+
+### Production Considerations
+
+- **Database Backups**: Set up automated backups with Vercel Postgres or your database provider
+- **Environment Variables**: Keep production credentials secure and separate from development
+- **Monitoring**: Consider setting up Vercel Analytics and error tracking
+- **Custom Domain**: Configure a custom domain in Vercel project settings if desired
