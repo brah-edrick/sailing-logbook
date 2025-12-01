@@ -13,15 +13,15 @@ export default async function ActivitiesPage({
   const params = await searchParams;
   const page = params.page ? Number(params.page) : 1;
   const limit = params.limit ? Number(params.limit) : 10;
-  const sortBy = params.sortBy as string | undefined;
-  const sortOrder = params.sortOrder as "asc" | "desc" | undefined;
+  const sortBy = (params.sortBy as string | undefined) || "startTime";
+  const sortOrder = (params.sortOrder as "asc" | "desc" | undefined) || "desc";
 
   // Build query string for API call
   const queryParams = new URLSearchParams();
   queryParams.set("page", page.toString());
   queryParams.set("limit", limit.toString());
-  if (sortBy) queryParams.set("sortBy", sortBy);
-  if (sortOrder) queryParams.set("sortOrder", sortOrder);
+  queryParams.set("sortBy", sortBy);
+  queryParams.set("sortOrder", sortOrder);
 
   const [activitiesResponse, reportResponse] = await Promise.all([
     fetch(

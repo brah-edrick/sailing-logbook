@@ -31,15 +31,15 @@ export default async function BoatDetailPage({
 
   const page = searchParamsData.page ? Number(searchParamsData.page) : 1;
   const limit = searchParamsData.limit ? Number(searchParamsData.limit) : 10;
-  const sortBy = searchParamsData.sortBy as string | undefined;
-  const sortOrder = searchParamsData.sortOrder as "asc" | "desc" | undefined;
+  const sortBy = (searchParamsData.sortBy as string | undefined) || "startTime";
+  const sortOrder = (searchParamsData.sortOrder as "asc" | "desc" | undefined) || "desc";
 
   // Build query string for activities API call
   const activitiesQueryParams = new URLSearchParams();
   activitiesQueryParams.set("page", page.toString());
   activitiesQueryParams.set("limit", limit.toString());
-  if (sortBy) activitiesQueryParams.set("sortBy", sortBy);
-  if (sortOrder) activitiesQueryParams.set("sortOrder", sortOrder);
+  activitiesQueryParams.set("sortBy", sortBy);
+  activitiesQueryParams.set("sortOrder", sortOrder);
 
   const [boatResponse, activitiesResponse, reportResponse] = await Promise.all([
     fetch(
