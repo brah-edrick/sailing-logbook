@@ -15,7 +15,7 @@ import {
   NumberInput,
 } from "@chakra-ui/react";
 import { Card } from "@/components/card";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,6 +27,7 @@ import {
   type ActivityPurpose,
 } from "@/validation/schemas";
 import { ApiBoat } from "@/types/api";
+import { DateTime } from "luxon";
 
 export interface FormFieldProps {
   label: string;
@@ -126,6 +127,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     handleSubmit,
     watch,
     setValue,
+    subscribe,
     formState: { errors, isValid },
   } = useForm<ActivityFormInput>({
     resolver: zodResolver(activityFormSchema),
@@ -151,6 +153,51 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
   const handleFormSubmit = (data: ActivityFormInput) => {
     onSubmit(data);
   };
+
+  const [endTimeIsEnabled, setEndTimeIsEnabled] = useState(
+    initialValues.startTime ? true : false
+  );
+
+  // subscribe to form updates and when startTime is set enable the endTime field and set the endTime to be 2 hours after the startTime
+  useEffect(() => {
+    // make sure to unsubscribe;
+    const callback = subscribe({
+      formState: {
+        values: true,
+      },
+      callback: ({ values }) => {
+        if (values.startTime && !endTimeIsEnabled && !values.endTime) {
+          setEndTimeIsEnabled(true);
+          const newEndTime =
+            new Date(values.startTime).getTime() + 2 * 60 * 60 * 1000;
+          const newEndTimeString = new Date(newEndTime).toISOString();
+          // Convert to timezone-aware local time format (YYYY-MM-DDTHH:mm)
+          const localTimeString = DateTime.fromISO(newEndTimeString)
+            .toLocal()
+            .toFormat("yyyy-MM-dd'T'HH:mm");
+          setValue("endTime", localTimeString);
+        }
+        // if the endTime is set and is before the startTime, set the startTime to be 2 hours before the endTime
+        if (values.endTime && values.startTime) {
+          const endTime = DateTime.fromISO(values.endTime);
+          const startTime = DateTime.fromISO(values.startTime);
+          if (
+            endTime.isValid &&
+            startTime.isValid &&
+            endTime.toMillis() < startTime.toMillis()
+          ) {
+            const desiredStartTime = endTime.minus({ hours: 2 }).toISO();
+            const localTimeString = DateTime.fromISO(desiredStartTime)
+              .toLocal()
+              .toFormat("yyyy-MM-dd'T'HH:mm");
+            setValue("startTime", localTimeString);
+          }
+        }
+      },
+    });
+
+    return () => callback();
+  }, [subscribe]);
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -281,6 +328,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
             >
               <Input
                 {...register("endTime")}
+                disabled={!endTimeIsEnabled}
                 type="datetime-local"
                 size="md"
                 bg="bg.subtle"

@@ -252,4 +252,121 @@ describe("ActivityForm", () => {
     const submitButton = screen.getByRole("button", { name: /save/i });
     expect(submitButton).toBeDisabled();
   });
+
+  it("automatically sets endTime to 2 hours after startTime in local timezone format when startTime is set", async () => {
+    const user = userEvent.setup();
+    render(
+      <ActivityForm
+        onSubmit={mockOnSubmit}
+        initialValues={{}}
+        submitButtonText="Save"
+        boats={mockBoats}
+      />
+    );
+
+    const startTimeInput = screen.getByLabelText(
+      /start time/i
+    ) as HTMLInputElement;
+    const endTimeInput = screen.getByLabelText(/end time/i) as HTMLInputElement;
+
+    // Initially, endTime should be disabled
+    expect(endTimeInput).toBeDisabled();
+
+    // Set startTime to a specific date/time
+    await user.clear(startTimeInput);
+    await user.type(startTimeInput, "2024-01-01T10:00");
+
+    // Wait for the form subscription to update endTime
+    await waitFor(() => {
+      expect(endTimeInput).not.toBeDisabled();
+      expect(endTimeInput.value).toBeTruthy();
+    });
+
+    // Verify endTime is set to 2 hours after startTime in local timezone format (YYYY-MM-DDTHH:mm)
+    const endTimeValue = endTimeInput.value;
+    expect(endTimeValue).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/); // Matches YYYY-MM-DDTHH:mm format
+
+    // Parse the times and verify they're 2 hours apart
+    const startDate = new Date(startTimeInput.value);
+    const endDate = new Date(endTimeValue);
+    const diffInHours =
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60);
+    expect(diffInHours).toBeCloseTo(2, 1);
+  });
+
+  it("automatically adjusts startTime to 2 hours before endTime when endTime is set before startTime", async () => {
+    const user = userEvent.setup();
+    render(
+      <ActivityForm
+        onSubmit={mockOnSubmit}
+        initialValues={{
+          startTime: "2024-01-01T12:00",
+        }}
+        submitButtonText="Save"
+        boats={mockBoats}
+      />
+    );
+
+    const startTimeInput = screen.getByLabelText(
+      /start time/i
+    ) as HTMLInputElement;
+    const endTimeInput = screen.getByLabelText(/end time/i) as HTMLInputElement;
+
+    // Set endTime to be before startTime
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, "2024-01-01T10:00");
+
+    // Wait for the form subscription to update startTime
+    await waitFor(() => {
+      const startTimeValue = startTimeInput.value;
+      expect(startTimeValue).toBeTruthy();
+      expect(startTimeValue).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/); // Matches YYYY-MM-DDTHH:mm format
+    });
+
+    // Verify startTime is set to 2 hours before endTime in local timezone format
+    const startTimeValue = startTimeInput.value;
+    const endTimeValue = endTimeInput.value;
+
+    // Parse the times and verify startTime is 2 hours before endTime
+    const startDate = new Date(startTimeValue);
+    const endDate = new Date(endTimeValue);
+    const diffInHours =
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60);
+    expect(diffInHours).toBeCloseTo(2, 1);
+  });
+
+  it("does not adjust startTime when endTime is after startTime", async () => {
+    const user = userEvent.setup();
+    const initialStartTime = "2024-01-01T10:00";
+    render(
+      <ActivityForm
+        onSubmit={mockOnSubmit}
+        initialValues={{
+          startTime: initialStartTime,
+        }}
+        submitButtonText="Save"
+        boats={mockBoats}
+      />
+    );
+
+    const startTimeInput = screen.getByLabelText(
+      /start time/i
+    ) as HTMLInputElement;
+    const endTimeInput = screen.getByLabelText(/end time/i) as HTMLInputElement;
+
+    // Set endTime to be after startTime (valid case)
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, "2024-01-01T14:00");
+
+    // Wait a bit to ensure any async updates complete
+    await waitFor(
+      () => {
+        expect(endTimeInput.value).toBe("2024-01-01T14:00");
+      },
+      { timeout: 1000 }
+    );
+
+    // startTime should remain unchanged since endTime is after it
+    expect(startTimeInput.value).toBe(initialStartTime);
+  });
 });
