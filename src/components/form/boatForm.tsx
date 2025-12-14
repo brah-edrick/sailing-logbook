@@ -262,7 +262,9 @@ export const BoatForm: React.FC<BoatFormProps> = ({
               <NumberInput.Root
                 value={watch("lengthFt") || ""}
                 onValueChange={(details) =>
-                  setValue("lengthFt", details.value.toString())
+                  setValue("lengthFt", details.valueAsNumber.toString(), {
+                    shouldValidate: true,
+                  })
                 }
                 step={1}
                 min={0}
@@ -289,7 +291,9 @@ export const BoatForm: React.FC<BoatFormProps> = ({
               <NumberInput.Root
                 value={watch("beamFt") || ""}
                 onValueChange={(details) =>
-                  setValue("beamFt", details.value.toString())
+                  setValue("beamFt", details.valueAsNumber.toString(), {
+                    shouldValidate: true,
+                  })
                 }
                 step={1}
                 min={0}
