@@ -1,9 +1,19 @@
 import Link from "next/link";
 import { Box, Button, Flex, Heading, Text, Stack } from "@chakra-ui/react";
-import { PaginatedActivitiesResponse, ApiActivitiesReport } from "@/types/api";
+import {
+  PaginatedActivitiesResponse,
+  ApiActivitiesReport,
+  ApiSailingActivityWithBoat,
+} from "@/types/api";
 import { ActivitiesSummaryCard } from "@/components/activitiesSummaryCard";
 import { ActivitiesTable } from "@/components/activitiesTable";
 import { AuthGuard } from "@/components/authGuard";
+import { SailingHeatmap } from "@/components/sailingHeatmap";
+import { ActivityStatsCharts } from "@/components/activityStatsCharts";
+
+interface HeatmapResponse {
+  data: ApiSailingActivityWithBoat[];
+}
 
 export default async function ActivitiesPage({
   searchParams,
@@ -23,20 +33,27 @@ export default async function ActivitiesPage({
   queryParams.set("sortBy", sortBy);
   queryParams.set("sortOrder", sortOrder);
 
-  const [activitiesResponse, reportResponse] = await Promise.all([
-    fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities?${queryParams.toString()}`,
-      {
-        cache: "no-store",
-      }
-    ),
-    fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities/reports`,
-      {
-        cache: "no-store",
-      }
-    ),
-  ]);
+  const [activitiesResponse, reportResponse, heatmapResponse] =
+    await Promise.all([
+      fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities?${queryParams.toString()}`,
+        {
+          cache: "no-store",
+        }
+      ),
+      fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities/reports`,
+        {
+          cache: "no-store",
+        }
+      ),
+      fetch(
+        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/activities/heatmap`,
+        {
+          cache: "no-store",
+        }
+      ),
+    ]);
 
   if (!activitiesResponse.ok) {
     throw new Error("Failed to fetch activities");
@@ -46,9 +63,14 @@ export default async function ActivitiesPage({
     throw new Error("Failed to fetch report");
   }
 
-  const [activitiesData, report] = await Promise.all([
+  if (!heatmapResponse.ok) {
+    throw new Error("Failed to fetch heatmap data");
+  }
+
+  const [activitiesData, report, heatmapData] = await Promise.all([
     activitiesResponse.json() as Promise<PaginatedActivitiesResponse>,
     reportResponse.json() as Promise<ApiActivitiesReport>,
+    heatmapResponse.json() as Promise<HeatmapResponse>,
   ]);
 
   return (
@@ -74,6 +96,12 @@ export default async function ActivitiesPage({
 
       {/* Summary Card */}
       <ActivitiesSummaryCard report={report} />
+
+      {/* Sailing Heatmap */}
+      <SailingHeatmap activities={heatmapData.data} />
+
+      {/* Cumulative Stats Charts */}
+      <ActivityStatsCharts activities={heatmapData.data} />
 
       {/* Activities Table */}
       <ActivitiesTable data={activitiesData} />
