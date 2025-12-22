@@ -164,17 +164,9 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
       {/* Hours Chart */}
       <Card>
         <Stack gap="3">
-          <Flex justify="space-between" align="center">
-            <Text fontWeight="semibold" fontSize="md">
-              Hours Sailed
-            </Text>
-            <Flex align="center" gap="2">
-              <Box w="10px" h="10px" borderRadius="full" bg="blue.500" />
-              <Text fontSize="sm" color="fg.muted">
-                Cumulative
-              </Text>
-            </Flex>
-          </Flex>
+          <Text fontWeight="semibold" fontSize="md">
+            Hours Sailed
+          </Text>
           <Box h="180px">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
@@ -249,17 +241,9 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
       {/* Distance Chart */}
       <Card>
         <Stack gap="3">
-          <Flex justify="space-between" align="center">
-            <Text fontWeight="semibold" fontSize="md">
-              Distance Sailed
-            </Text>
-            <Flex align="center" gap="2">
-              <Box w="10px" h="10px" borderRadius="full" bg="green.500" />
-              <Text fontSize="sm" color="fg.muted">
-                Cumulative
-              </Text>
-            </Flex>
-          </Flex>
+          <Text fontWeight="semibold" fontSize="md">
+            Distance Sailed
+          </Text>
           <Box h="180px">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
