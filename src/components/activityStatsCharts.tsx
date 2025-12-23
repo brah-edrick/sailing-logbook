@@ -35,8 +35,6 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     );
 
-    const dataPoints: ChartDataPoint[] = [];
-
     // Group by month for cleaner visualization
     const monthlyData = new Map<
       string,
@@ -64,17 +62,21 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
       }
     }
 
-    // Convert to per-month data points (not cumulative)
-    const sortedMonths = Array.from(monthlyData.entries()).sort(
-      ([a], [b]) => (a < b ? -1 : 1)
-    );
+    // Generate data points for the last 12 months, including months with 0 values
+    const dataPoints: ChartDataPoint[] = [];
+    const today = DateTime.now();
+    
+    // Start from 11 months ago to include current month (total 12 months)
+    for (let i = 11; i >= 0; i--) {
+      const monthDate = today.minus({ months: i }).startOf("month");
+      const monthKey = monthDate.toFormat("yyyy-MM");
+      const monthData = monthlyData.get(monthKey);
 
-    for (const [, data] of sortedMonths) {
       dataPoints.push({
-        date: data.date.toISO()!,
-        displayDate: data.date.toFormat("MMM"),
-        cumulativeHours: Math.round(data.hours * 10) / 10,
-        cumulativeDistance: Math.round(data.distance * 10) / 10,
+        date: monthDate.toISO()!,
+        displayDate: monthDate.toFormat("MMM"),
+        cumulativeHours: monthData ? Math.round(monthData.hours * 10) / 10 : 0,
+        cumulativeDistance: monthData ? Math.round(monthData.distance * 10) / 10 : 0,
       });
     }
 
@@ -83,6 +85,7 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
 
 
   const formatNumber = (value: number) => {
+    if (value === 0) return "";
     return Math.round(value).toString();
   };
 

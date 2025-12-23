@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Text, Flex, Stack } from "@chakra-ui/react";
+import { Box, Text, Flex, Stack, Grid } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 import { ApiSailingActivityWithBoat } from "@/types/api";
 import { DateTime } from "luxon";
@@ -85,12 +85,10 @@ function HeatmapPopover({ data, position }: HeatmapPopoverProps) {
 
 function DayCell({
   data,
-  maxDistance,
   onHover,
   onLeave,
 }: {
   data: DayData | null;
-  maxDistance: number;
   onHover: (data: DayData, e: React.MouseEvent) => void;
   onLeave: () => void;
 }) {
@@ -98,8 +96,8 @@ function DayCell({
     // Empty cell for padding
     return (
       <Box
-        w="12px"
-        h="12px"
+        w="100%"
+        aspectRatio="1"
         borderRadius="sm"
         bg="transparent"
         visibility="hidden"
@@ -108,11 +106,6 @@ function DayCell({
   }
 
   const hasActivities = data.activities.length > 0;
-
-  // Calculate opacity based on distance (min 0.3, max 1.0)
-  const opacity = hasActivities
-    ? Math.max(0.3, Math.min(1, data.totalDistance / (maxDistance || 1)))
-    : 0;
 
   // Generate background style based on boat colors
   const getBackgroundStyle = (): React.CSSProperties => {
@@ -125,7 +118,6 @@ function DayCell({
     if (colors.length === 1) {
       return {
         backgroundColor: colors[0],
-        opacity,
       };
     }
 
@@ -142,7 +134,6 @@ function DayCell({
     return {
       background: `linear-gradient(180deg, ${gradientStops})`,
       backgroundOrigin: "border-box",
-      opacity,
     };
   };
 
@@ -154,8 +145,8 @@ function DayCell({
 
   return (
     <Box
-      w="12px"
-      h="12px"
+      w="100%"
+      aspectRatio="1"
       borderRadius="sm"
       style={getBackgroundStyle()}
       bg={!hasActivities ? "bg.subtle" : undefined}
@@ -177,7 +168,7 @@ export function SailingHeatmap({ activities }: SailingHeatmapProps) {
   } | null>(null);
 
   // Process activities into a map by date
-  const { weeks, maxDistance, monthLabels } = useMemo(() => {
+  const { weeks, monthLabels } = useMemo(() => {
     const dataMap = new Map<string, DayData>();
 
     // Calculate exactly 52 weeks ending today
@@ -213,11 +204,7 @@ export function SailingHeatmap({ activities }: SailingHeatmapProps) {
       }
     }
 
-    // Calculate max distance for opacity scaling
-    let maxDist = 0;
-    for (const data of dataMap.values()) {
-      maxDist = Math.max(maxDist, data.totalDistance);
-    }
+
 
     // Generate weeks array (each week is an array of 7 days)
     const weeksArr: (DayData | null)[][] = [];
@@ -275,7 +262,6 @@ export function SailingHeatmap({ activities }: SailingHeatmapProps) {
 
     return {
       weeks: finalWeeks,
-      maxDistance: maxDist,
       monthLabels: monthLabelsArr.slice(-12),
     };
   }, [activities]);
@@ -295,7 +281,7 @@ export function SailingHeatmap({ activities }: SailingHeatmapProps) {
     setHoveredDay(null);
   };
 
-  const dayLabels = ["Mon", "", "Wed", "", "Fri", "", ""];
+
 
   return (
     <Card>
@@ -304,100 +290,47 @@ export function SailingHeatmap({ activities }: SailingHeatmapProps) {
           Sailing Activity
         </Text>
         <Box pb="2">
-          <Flex gap="1">
-            {/* Day labels */}
-            <Stack gap="1" mr="2" pt="20px">
-              {dayLabels.map((label, i) => (
-                <Text
-                  key={i}
-                  fontSize="xs"
-                  color="fg.muted"
-                  h="12px"
-                  lineHeight="12px"
-                >
-                  {label}
-                </Text>
-              ))}
-            </Stack>
-
-            {/* Weeks container */}
-            <Box overflowX="auto" maxW="100%">
-              {/* Month labels */}
-              <Flex h="16px" mb="1" position="relative">
-                {monthLabels.map((monthLabel, i) => (
+          {/* Weeks container */}
+          <Box w="100%">
+            {/* Month labels */}
+            <Flex h="16px" mb="1" position="relative" w="100%">
+              {monthLabels.map((monthLabel, i) => {
+                const position = (monthLabel.weekIndex / 52) * 100;
+                return (
                   <Text
                     key={i}
                     fontSize="xs"
                     color="fg.muted"
                     position="absolute"
-                    left={`${monthLabel.weekIndex * 14}px`}
+                    left={`${position}%`}
                   >
                     {monthLabel.label}
                   </Text>
-                ))}
-              </Flex>
+                );
+              })}
+            </Flex>
 
-              {/* Heatmap grid */}
-              <Flex gap="2px">
-                {weeks.map((week, weekIndex) => (
-                  <Stack key={weekIndex} gap="2px">
-                    {week.map((day, dayIndex) => (
-                      <DayCell
-                        key={dayIndex}
-                        data={day}
-                        maxDistance={maxDistance}
-                        onHover={handleHover}
-                        onLeave={handleLeave}
-                      />
-                    ))}
-                  </Stack>
-                ))}
-              </Flex>
-            </Box>
-          </Flex>
+            {/* Heatmap grid - 52 columns (weeks) x 7 rows (days) */}
+            <Grid
+              templateColumns="repeat(52, 1fr)"
+              templateRows="repeat(7, 1fr)"
+              autoFlow="column"
+              gap="2px"
+              w="100%"
+            >
+              {weeks.map((week, weekIndex) =>
+                week.map((day, dayIndex) => (
+                  <DayCell
+                    key={`${weekIndex}-${dayIndex}`}
+                    data={day}
+                    onHover={handleHover}
+                    onLeave={handleLeave}
+                  />
+                ))
+              )}
+            </Grid>
+          </Box>
         </Box>
-
-        {/* Legend */}
-        <Flex justify="flex-end" align="center" gap="2">
-          <Text fontSize="xs" color="fg.muted">
-            Less
-          </Text>
-          <Flex gap="1">
-            <Box
-              w="12px"
-              h="12px"
-              borderRadius="sm"
-              bg="bg.subtle"
-              border="1px solid"
-              borderColor="border.muted"
-            />
-            <Box
-              w="12px"
-              h="12px"
-              borderRadius="sm"
-              bg="blue.500"
-              opacity={0.3}
-            />
-            <Box
-              w="12px"
-              h="12px"
-              borderRadius="sm"
-              bg="blue.500"
-              opacity={0.5}
-            />
-            <Box
-              w="12px"
-              h="12px"
-              borderRadius="sm"
-              bg="blue.500"
-              opacity={0.75}
-            />
-            <Box w="12px" h="12px" borderRadius="sm" bg="blue.500" opacity={1} />
-          </Flex>
-          <Text fontSize="xs" color="fg.muted">
-            More
-          </Text>
-        </Flex>
       </Stack>
 
       {hoveredDay && (
