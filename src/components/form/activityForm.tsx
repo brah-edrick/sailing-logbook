@@ -197,7 +197,7 @@ export const ActivityForm: React.FC<ActivityFormProps> = ({
     });
 
     return () => callback();
-  }, [subscribe]);
+  }, [subscribe, endTimeIsEnabled, setValue]);
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
