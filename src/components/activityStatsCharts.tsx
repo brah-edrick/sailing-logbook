@@ -6,8 +6,8 @@ import { ApiSailingActivityWithBoat } from "@/types/api";
 import { DateTime } from "luxon";
 import { Card } from "@/components/card";
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -20,67 +20,83 @@ interface ActivityStatsChartsProps {
   activities: ApiSailingActivityWithBoat[];
 }
 
-interface ChartDataPoint {
-  date: string;
-  displayDate: string;
-  cumulativeHours: number;
-  cumulativeDistance: number;
+interface BoatData {
+  id: number;
+  name: string;
+  color: string;
 }
 
 export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
-  const chartData = useMemo(() => {
-    // Sort activities by date
-    const sortedActivities = [...activities].sort(
-      (a, b) =>
-        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-    );
-
-    // Group by month for cleaner visualization
-    const monthlyData = new Map<
-      string,
-      { hours: number; distance: number; date: DateTime }
-    >();
-
-    for (const activity of sortedActivities) {
-      const start = DateTime.fromISO(activity.startTime);
-      const end = DateTime.fromISO(activity.endTime);
-      const hours = end.diff(start, "hours").hours;
-      const distance = activity.distanceNm || 0;
-
-      const monthKey = start.toFormat("yyyy-MM");
-      const existing = monthlyData.get(monthKey);
-
-      if (existing) {
-        existing.hours += hours;
-        existing.distance += distance;
-      } else {
-        monthlyData.set(monthKey, {
-          hours,
-          distance,
-          date: start.startOf("month"),
+  const { chartData, boats } = useMemo(() => {
+    // Get unique boats
+    const boatsMap = new Map<number, BoatData>();
+    
+    for (const activity of activities) {
+      if (activity.boat && !boatsMap.has(activity.boat.id)) {
+        boatsMap.set(activity.boat.id, {
+          id: activity.boat.id,
+          name: activity.boat.name,
+          color: activity.boat.colorHex || "#6b7280",
         });
       }
     }
 
-    // Generate data points for the last 12 months, including months with 0 values
-    const dataPoints: ChartDataPoint[] = [];
+    const boatsList = Array.from(boatsMap.values());
+
+    // Group by month and boat
+    const monthlyData = new Map<
+      string,
+      { date: DateTime; boats: Map<number, { hours: number; distance: number }> }
+    >();
+
+    for (const activity of activities) {
+      const start = DateTime.fromISO(activity.startTime);
+      const end = DateTime.fromISO(activity.endTime);
+      const hours = end.diff(start, "hours").hours;
+      const distance = activity.distanceNm || 0;
+      const boatId = activity.boat?.id || 0;
+
+      const monthKey = start.toFormat("yyyy-MM");
+      
+      if (!monthlyData.has(monthKey)) {
+        monthlyData.set(monthKey, {
+          date: start.startOf("month"),
+          boats: new Map(),
+        });
+      }
+
+      const monthData = monthlyData.get(monthKey)!;
+      const boatData = monthData.boats.get(boatId) || { hours: 0, distance: 0 };
+      boatData.hours += hours;
+      boatData.distance += distance;
+      monthData.boats.set(boatId, boatData);
+    }
+
+    // Generate data points for the last 12 months
+    const dataPoints: Array<Record<string, string | number>> = [];
     const today = DateTime.now();
     
-    // Start from 11 months ago to include current month (total 12 months)
     for (let i = 11; i >= 0; i--) {
       const monthDate = today.minus({ months: i }).startOf("month");
       const monthKey = monthDate.toFormat("yyyy-MM");
       const monthData = monthlyData.get(monthKey);
 
-      dataPoints.push({
+      const point: Record<string, string | number> = {
         date: monthDate.toISO()!,
         displayDate: monthDate.toFormat("MMM"),
-        cumulativeHours: monthData ? Math.round(monthData.hours * 10) / 10 : 0,
-        cumulativeDistance: monthData ? Math.round(monthData.distance * 10) / 10 : 0,
-      });
+      };
+
+      // Add data for each boat
+      for (const boat of boatsList) {
+        const boatData = monthData?.boats.get(boat.id);
+        point[`hours_${boat.id}`] = boatData ? Math.round(boatData.hours * 10) / 10 : 0;
+        point[`distance_${boat.id}`] = boatData ? Math.round(boatData.distance * 10) / 10 : 0;
+      }
+
+      dataPoints.push(point);
     }
 
-    return dataPoints;
+    return { chartData: dataPoints, boats: boatsList };
   }, [activities]);
 
 
@@ -101,8 +117,7 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
   };
 
   // Colors that match the app's design
-  const hoursColor = "#3182CE"; // blue.500
-  const distanceColor = "#38A169"; // green.500
+  // (Now using boat colors directly from the data)
 
   // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }: {
@@ -116,6 +131,11 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
     label?: string;
   }) => {
     if (active && payload && payload.length) {
+      // Filter out entries with 0 values
+      const nonZeroPayload = payload.filter(entry => entry.value > 0);
+      
+      if (nonZeroPayload.length === 0) return null;
+      
       return (
         <Box
           bg="bg.panel"
@@ -128,7 +148,7 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
           <Text fontWeight="semibold" fontSize="sm" mb="1">
             {label}
           </Text>
-          {payload.map((entry, index) => (
+          {nonZeroPayload.map((entry, index) => (
             <Flex key={index} justify="space-between" gap="4" fontSize="xs">
               <Flex align="center" gap="2">
                 <Box
@@ -140,7 +160,7 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
                 <Text color="fg.muted">{entry.name}</Text>
               </Flex>
               <Text fontWeight="medium">
-                {entry.dataKey === "cumulativeHours"
+                {entry.dataKey.startsWith("hours_")
                   ? formatHoursTooltip(entry.value)
                   : formatDistanceTooltip(entry.value)}
               </Text>
@@ -172,30 +192,10 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
           </Text>
           <Box h="180px">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
+              <BarChart
                 data={chartData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
-                <defs>
-                  <linearGradient
-                    id="hoursGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={hoursColor}
-                      stopOpacity={0.3}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={hoursColor}
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
@@ -203,10 +203,13 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
                 />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 10, fill: "var(--chakra-colors-fg-muted)" }}
+                  tick={{ fontSize: 8, fill: "var(--chakra-colors-fg-muted)", dx: -5 }}
+                  angle={-90}
+                  textAnchor="end"
                   tickLine={false}
                   axisLine={false}
-                  interval="preserveStartEnd"
+                  interval={0}
+                  height={60}
                 />
                 <YAxis
                   tickFormatter={formatNumber}
@@ -226,16 +229,18 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
                     }}
                   />
                 </YAxis>
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="cumulativeHours"
-                  name="Hours Sailed"
-                  stroke={hoursColor}
-                  strokeWidth={2}
-                  fill="url(#hoursGradient)"
-                />
-              </AreaChart>
+                <Tooltip content={<CustomTooltip />} cursor={false} />
+                {boats.map((boat) => (
+                  <Bar
+                    key={boat.id}
+                    dataKey={`hours_${boat.id}`}
+                    name={boat.name}
+                    stackId="hours"
+                    fill={boat.color}
+                    cursor="default"
+                  />
+                ))}
+              </BarChart>
             </ResponsiveContainer>
           </Box>
         </Stack>
@@ -249,30 +254,10 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
           </Text>
           <Box h="180px">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
+              <BarChart
                 data={chartData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
-                <defs>
-                  <linearGradient
-                    id="distanceGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={distanceColor}
-                      stopOpacity={0.3}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={distanceColor}
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
@@ -280,10 +265,13 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
                 />
                 <XAxis
                   dataKey="displayDate"
-                  tick={{ fontSize: 10, fill: "var(--chakra-colors-fg-muted)" }}
+                  tick={{ fontSize: 8, fill: "var(--chakra-colors-fg-muted)", dx: -5 }}
+                  angle={-90}
+                  textAnchor="end"
                   tickLine={false}
                   axisLine={false}
-                  interval="preserveStartEnd"
+                  interval={0}
+                  height={60}
                 />
                 <YAxis
                   tickFormatter={formatNumber}
@@ -303,16 +291,18 @@ export function ActivityStatsCharts({ activities }: ActivityStatsChartsProps) {
                     }}
                   />
                 </YAxis>
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="cumulativeDistance"
-                  name="Distance Sailed"
-                  stroke={distanceColor}
-                  strokeWidth={2}
-                  fill="url(#distanceGradient)"
-                />
-              </AreaChart>
+                <Tooltip content={<CustomTooltip />} cursor={false} />
+                {boats.map((boat) => (
+                  <Bar
+                    key={boat.id}
+                    dataKey={`distance_${boat.id}`}
+                    name={boat.name}
+                    stackId="distance"
+                    fill={boat.color}
+                    cursor="default"
+                  />
+                ))}
+              </BarChart>
             </ResponsiveContainer>
           </Box>
         </Stack>
